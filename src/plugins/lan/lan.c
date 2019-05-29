@@ -241,7 +241,7 @@ ipmi_lan_send_packet(struct ipmi_intf * intf, uint8_t * data, int data_len)
 {
 	if (verbose > 2)
 		printbuf(data, data_len, "send_packet");
-
+	IPMI_BUFFER_EMERG(data, data_len, "send_packet");
 	return send(intf->fd, data, data_len, 0);
 }
 

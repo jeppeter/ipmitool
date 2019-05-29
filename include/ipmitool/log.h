@@ -65,9 +65,11 @@ void ipmi_buffer_log(int level, const char* file, int lineno, void* pbuf, int bu
 #define IPMI_DEBUG(...)       do{ipmi_log(LOG_DEBUG,__FILE__,__LINE__,__VA_ARGS__);}while(0)
 #define IPMI_INFO(...)        do{ipmi_log(LOG_INFO,__FILE__,__LINE__,__VA_ARGS__);}while(0)
 #define IPMI_ERR(...)         do{ipmi_log(LOG_ERR,__FILE__,__LINE__,__VA_ARGS__);}while(0)
+#define IPMI_EMERG(...)       do{ipmi_log(LOG_EMERG,__FILE__,__LINE__,__VA_ARGS__);}while(0)
 
 #define IPMI_BUFFER_DEBUG(ptr,size,...)       do{ipmi_buffer_log(LOG_DEBUG,__FILE__,__LINE__,(void*)(ptr), (int)(size),__VA_ARGS__);}while(0)
 #define IPMI_BUFFER_ERR(ptr,size,...)         do{ipmi_buffer_log(LOG_ERR,__FILE__,__LINE__,(void*)(ptr), (int)(size),__VA_ARGS__);}while(0)
+#define IPMI_BUFFER_EMERG(ptr,size,...)       do{ipmi_buffer_log(LOG_EMERG,__FILE__,__LINE__,(void*)(ptr), (int)(size),__VA_ARGS__);}while(0)
 
 #endif /*IPMITOOL_LOG_H*/
 
