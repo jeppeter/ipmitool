@@ -48,6 +48,15 @@
 # include <config.h>
 #endif
 
+#ifdef ENABLE_OPENIPMI_V39_PATCH
+# define RETRY_COUNT_MAX 3
+static int errorCount;
+# define HPMFWUPG_IS_RETRYABLE(error)                                          \
+ ((((error==0x83)||(error==0x82)||(error==0x80)) && (errorCount++<RETRY_COUNT_MAX))?TRUE:FALSE)
+#else
+# define HPMFWUPG_IS_RETRYABLE(error) FALSE
+#endif
+
 
 extern int verbose;
 uint16_t

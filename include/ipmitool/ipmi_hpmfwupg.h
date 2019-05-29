@@ -79,14 +79,6 @@ int ipmi_hpmfwupg_main(struct ipmi_intf *, int, char **);
  */
 #define ENABLE_OPENIPMI_V39_PATCH
 
-#ifdef ENABLE_OPENIPMI_V39_PATCH
-# define RETRY_COUNT_MAX 3
-static int errorCount;
-# define HPMFWUPG_IS_RETRYABLE(error)                                          \
- ((((error==0x83)||(error==0x82)||(error==0x80)) && (errorCount++<RETRY_COUNT_MAX))?TRUE:FALSE)
-#else
-# define HPMFWUPG_IS_RETRYABLE(error) FALSE
-#endif
 
 /* HPM FIRMWARE UPGRADE GENERAL DEFINITIONS */
 #define HPMFWUPG_PICMG_IDENTIFIER         0

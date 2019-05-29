@@ -100,6 +100,8 @@ int ipmi_shell_main(struct ipmi_intf *intf, int argc, char **argv)
 {
 	char *ptr, *pbuf, **ap, *__argv[EXEC_ARG_SIZE];
 	int __argc, rc=0;
+	argc = argc;
+	argv = argv;
 
 	rl_readline_name = "ipmitool";
 

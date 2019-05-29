@@ -487,7 +487,7 @@ serial_term_build_msg(const struct ipmi_intf * intf,
 	}
 
 	/* check overall packet length */
-	if(req->msg.data_len + 3 + bridging_level * 8 > max_len) {
+	if(req->msg.data_len + 3 + bridging_level * 8 > (int)max_len) {
 		lprintf(LOG_ERR, "ipmitool: Message data is too long");
 		return -1;
 	}
@@ -635,7 +635,7 @@ serial_term_send_msg(struct ipmi_intf * intf, uint8_t * msg, int msg_len)
 
 	/* body */
 	for (i = 0; i < msg_len; i++) {
-		buf += sprintf( buf, "%02x", msg[i]);
+		buf += sprintf( (char*)buf, "%02x", msg[i]);
 	}
 
 	/* stop character */
@@ -786,7 +786,7 @@ ipmi_serial_term_send_cmd(struct ipmi_intf * intf, struct ipmi_rq * req)
 	static struct ipmi_rs rsp;
 	uint8_t msg[IPMI_SERIAL_MAX_RESPONSE], * resp = msg;
 	struct serial_term_request_ctx req_ctx[2];
-	int retry, rv, msg_len, bridging_level;
+	int retry, rv, msg_len=0, bridging_level;
 
 	if (!intf->opened && intf->open && intf->open(intf) < 0) {
 		return NULL;

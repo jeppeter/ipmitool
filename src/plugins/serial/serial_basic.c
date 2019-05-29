@@ -150,7 +150,7 @@ struct serial_bm_request_ctx {
  */
 static const struct {
 	int baudinit;
-	int baudrate;
+	unsigned int baudrate;
 } rates[] = {
 	{ B2400, 2400 },
 	{ B9600, 9600 },
@@ -202,7 +202,7 @@ serial_bm_open(struct ipmi_intf * intf)
 	struct termios ti;
 	unsigned int rate = 9600;
 	char *p;
-	int i;
+	unsigned int i;
 
 	if (!intf->devfile) {
 		lprintf(LOG_ERR, "Serial device is not specified");
@@ -475,6 +475,7 @@ serial_bm_parse_buffer(const uint8_t * data, int data_len,
 {
 	int i, tmp;
 
+	ctx->msg_len = 0;
 	for (i = 0; i < data_len; i++) {
 		/* check for start of new message */
 		if (data[i] == BM_START) {
@@ -581,7 +582,7 @@ serial_bm_recv_msg(struct ipmi_intf * intf,
 		rv = serial_bm_parse_buffer(recv_ctx->buffer,
 				recv_ctx->buffer_size, &parse_ctx);
 
-		if (rv < recv_ctx->buffer_size) {
+		if (rv < (int)recv_ctx->buffer_size) {
 			/* move non-parsed part of the buffer to the beginning */
 			memmove(recv_ctx->buffer, recv_ctx->buffer + rv,
 					recv_ctx->buffer_size - rv);
@@ -626,7 +627,7 @@ serial_bm_build_msg(const struct ipmi_intf * intf,
 	}
 
 	/* check overall packet length */
-	if(req->msg.data_len + 7 + bridging_level * 8 > max_len) {
+	if(req->msg.data_len + 7 + bridging_level * 8 > (int)max_len) {
 		lprintf(LOG_ERR, "ipmitool: Message data is too long");
 		return -1;
 	}
@@ -898,7 +899,7 @@ serial_bm_send_request(struct ipmi_intf * intf, struct ipmi_rq * req)
 	uint8_t msg[SERIAL_BM_MAX_MSG_SIZE], * resp = msg;
 	struct serial_bm_request_ctx req_ctx[3];
 	struct serial_bm_recv_ctx read_ctx;
-	int retry, rv, msg_len, bridging_level;
+	int retry, rv, msg_len = 0, bridging_level;
 
 	if (!intf->opened && intf->open && intf->open(intf) < 0) {
 		return NULL;
