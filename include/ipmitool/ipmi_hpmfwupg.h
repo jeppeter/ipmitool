@@ -37,7 +37,6 @@
 #include <ipmitool/ipmi.h>
 
 int ipmi_hpmfwupg_main(struct ipmi_intf *, int, char **);
-
 /* Agent version */
 #define HPMFWUPG_VERSION_MAJOR    1
 #define HPMFWUPG_VERSION_MINOR    0

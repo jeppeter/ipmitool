@@ -362,7 +362,7 @@ KfwumSetupBuffersFromFile(const char *pFileName, unsigned long fileSize)
 	}
 	if (modulus) {
 		if (fread(&firmBuf[qty * MAX_BUFFER_SIZE], 1,
-					modulus, pFileHandle) == modulus) {
+					modulus, pFileHandle) == (size_t)modulus) {
 			rc = 0;
 		}
 	}

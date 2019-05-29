@@ -379,7 +379,7 @@ ipmi_gendev_write_file(
 
          lprintf(LOG_ERR, "File   Size: %i", fileLength);
          lprintf(LOG_ERR, "Eeprom Size: %i", eeprom_size);
-         if(fileLength != eeprom_size)
+         if((int)fileLength != eeprom_size)
          {
             lprintf(LOG_ERR, "File size does not fit Eeprom Size");
             fclose(fp);

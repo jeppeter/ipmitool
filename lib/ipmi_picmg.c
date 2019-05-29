@@ -1849,7 +1849,7 @@ ipmi_picmg_clk_set(struct ipmi_intf * intf, int argc, char ** argv)
       if( argc > 7)
       {
          req.msg.data_len = 11;
-		 if (is_clk_resid(argv[6], &msg_data[10]) != 0) {
+		 if (is_clk_resid(argv[6], (int8_t*)&msg_data[10]) != 0) {
 			 return (-1);
 		 }
       }

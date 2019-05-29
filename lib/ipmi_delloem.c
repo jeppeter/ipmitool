@@ -1187,8 +1187,9 @@ ipmi_lcd_set_kvm(struct ipmi_intf * intf, char status)
 	LCD_STATUS lcdstatus;
 	int rc=0;
 	struct ipmi_rs * rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint8_t data[5];
+	memset(&req, 0, sizeof(req));
 	rc = ipmi_lcd_get_status_val(intf,&lcdstatus);
 	if (rc < 0) {
 		return -1;
@@ -1233,8 +1234,9 @@ ipmi_lcd_set_lock(struct ipmi_intf * intf,  char lock)
 	LCD_STATUS lcdstatus;
 	int rc =0;
 	struct ipmi_rs * rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint8_t data[5];
+	memset(&req, 0, sizeof(req));
 	rc = ipmi_lcd_get_status_val(intf,&lcdstatus);
 	if (rc < 0) {
 		return -1;
@@ -1573,7 +1575,6 @@ ipmi_macinfo_drac_idrac_virtual_mac(struct ipmi_intf* intf,uint8_t NicNum)
 	uint8_t msg_data[30];
 	uint8_t VirtualMacAddress [MACADDRESSLENGH];
 	uint8_t input_length=0;
-	uint8_t j;
 	uint8_t i;
 	if (NicNum != 0xff && NicNum != IDRAC_NIC_NUMBER) {
 		return 0;
@@ -1663,7 +1664,6 @@ ipmi_macinfo_drac_idrac_mac(struct ipmi_intf* intf,uint8_t NicNum)
 	uint8_t msg_data[30];
 	uint8_t input_length=0;
 	uint8_t iDRAC6MacAddressByte[MACADDRESSLENGH];
-	uint8_t j;
 	ipmi_macinfo_drac_idrac_virtual_mac(intf,NicNum);
 	if ((NicNum != 0xff && NicNum != IDRAC_NIC_NUMBER)
 			|| UseVirtualMacAddress != 0) {
@@ -1731,7 +1731,6 @@ ipmi_macinfo_10g(struct ipmi_intf* intf, uint8_t NicNum)
 	struct ipmi_rq req;
 	uint8_t msg_data[30];
 	uint8_t input_length=0;
-	uint8_t j;
 	uint8_t i;
 	uint8_t Total_No_NICs = 0;
 	InitEmbeddedNICMacAddressValues();
@@ -1794,7 +1793,6 @@ ipmi_macinfo_11g(struct ipmi_intf* intf, uint8_t NicNum)
 	struct ipmi_rq req;
 	uint8_t input_length = 0;
 	uint8_t i;
-	uint8_t j;
 	uint8_t len;
 	uint8_t loop_count;
 	uint8_t maxlen;
@@ -1986,7 +1984,7 @@ ipmi_delloem_lan_main(struct ipmi_intf * intf, int __UNUSED__(argc), char ** arg
 				lprintf(LOG_ERR, INVAILD_SHARED_MODE_SET_STRING);
 				return (-1);
 			}
-			rc = ipmi_lan_set_nic_selection_12g(intf,nic_set);
+			rc = ipmi_lan_set_nic_selection_12g(intf,(uint8_t*)nic_set);
 		} else {
 			nic_selection = get_nic_selection_mode(current_arg, argv);
 			if (INVALID == nic_selection) {
@@ -2655,8 +2653,9 @@ static int
 ipmi_get_power_capstatus_command(struct ipmi_intf * intf)
 {
 	struct ipmi_rs * rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint8_t data[2];
+	memset(&req, 0, sizeof(req));
 	req.msg.netfn = DELL_OEM_NETFN;
 	req.msg.lun = 0;
 	req.msg.cmd = IPMI_DELL_POWER_CAP_STATUS;
@@ -2699,8 +2698,9 @@ static int
 ipmi_set_power_capstatus_command(struct ipmi_intf * intf, uint8_t val)
 {
 	struct ipmi_rs * rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint8_t data[2];
+	memset(&req, 0, sizeof(req));
 	if (ipmi_get_power_capstatus_command(intf) < 0) {
 		return -1;
 	}
@@ -2942,10 +2942,10 @@ static int
 ipmi_get_power_headroom_command(struct ipmi_intf * intf,uint8_t unit)
 {
 	struct ipmi_rs * rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint64_t peakpowerheadroombtuphr;
 	uint64_t instantpowerhearoom;
-
+	memset(&req, 0 ,sizeof(req));
 	req.msg.netfn = DELL_OEM_NETFN;
 	req.msg.lun = 0;
 	req.msg.cmd = GET_PWR_HEADROOM_CMD;
@@ -3073,8 +3073,9 @@ ipmi_get_instan_power_consmpt_data(struct ipmi_intf * intf,
 		IPMI_INST_POWER_CONSUMPTION_DATA * instpowerconsumptiondata)
 {
 	struct ipmi_rs * rsp;
-	struct ipmi_rq req={0};
+	struct ipmi_rq req;
 	uint8_t msg_data[2];
+	memset(&req, 0 ,sizeof(req));
 	/*get instantaneous power consumption command*/
 	req.msg.netfn = DELL_OEM_NETFN;
 	req.msg.lun = 0;
@@ -3305,12 +3306,14 @@ ipmi_get_minpower_consmpt_history(struct ipmi_intf * intf,
 		rdata = (void *)pstMinpower;
 		printf("Peak power consmhistory  Data               : "
 				"%x %x %x %x %x %x %x %x %x %x\n   "
-				"%x %x %x %x %x %x %x %x %x %x %x %x %x\n\n",
+				"%x %x %x %x %x %x %x ",
 				rdata[0], rdata[1], rdata[2], rdata[3],
 				rdata[4], rdata[5], rdata[6], rdata[7],
 				rdata[8], rdata[9], rdata[10], rdata[11],
 				rdata[12], rdata[13], rdata[14], rdata[15],
-				rdata[16], rdata[17], rdata[18], rdata[19],
+				rdata[16]);
+		printf("%x %x %x %x %x %x %x\n\n", 
+				rdata[17], rdata[18], rdata[19],
 				rdata[20], rdata[21], rdata[22], rdata[23]);
 	}
 # if WORDS_BIGENDIAN
@@ -3484,7 +3487,7 @@ ipmi_get_power_cap(struct ipmi_intf * intf, IPMI_POWER_CAP * ipmipowercap)
 	}
 	if (verbose > 1) {
 		rdata = (void*)ipmipowercap;
-		printf("power cap  Data               :%x %x %x %x %x %x %x %x %x %x ",
+		printf("power cap  Data               :%x %x %x %x %x %x %x %x %x %x %x ",
 				rdata[1], rdata[2], rdata[3],
 				rdata[4], rdata[5], rdata[6], rdata[7],
 				rdata[8], rdata[9], rdata[10],rdata[11]);
@@ -3956,9 +3959,9 @@ static void
 CheckSetLEDSupport(struct ipmi_intf * intf)
 {
 	struct ipmi_rs * rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint8_t data[10];
-
+	memset(&req, 0, sizeof(req));
 	SetLEDSupported = 0;
 	req.msg.netfn = DELL_OEM_NETFN;
 	req.msg.lun = 0;
@@ -4001,8 +4004,9 @@ ipmi_getdrivemap(struct ipmi_intf * intf, int b, int d, int f, int *bay,
 		int *slot)
 {
 	struct ipmi_rs * rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint8_t data[8];
+	memset(&req, 0 , sizeof(req));
 	/* Get mapping of BDF to bay:slot */
 	req.msg.netfn = DELL_OEM_NETFN;
 	req.msg.lun = 0;
@@ -4052,8 +4056,9 @@ static int
 ipmi_setled_state(struct ipmi_intf * intf, int bayId, int slotId, int state)
 {
 	struct ipmi_rs * rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint8_t data[20];
+	memset(&req, 0, sizeof(req));
 	/* Issue Drive Status Update to bay:slot */
 	req.msg.netfn = DELL_OEM_NETFN;
 	req.msg.lun = 0;

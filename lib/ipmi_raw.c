@@ -331,7 +331,7 @@ ipmi_raw_main(struct ipmi_intf * intf, int argc, char ** argv)
 		ipmi_raw_help();
 		return (-1);
 	}
-	else if (argc > sizeof(data))
+	else if (argc > (int)sizeof(data))
 	{
 		lprintf(LOG_NOTICE, "Raw command input limit (256 bytes) exceeded");
 		return -1;

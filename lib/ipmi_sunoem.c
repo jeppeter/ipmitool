@@ -2289,7 +2289,7 @@ ipmi_sunoem_getbehavior(struct ipmi_intf * intf, int argc, char *argv[])
 	}
 
 	memset(&getbehavior_req, 0, sizeof(getbehavior_req));
-	strncpy(getbehavior_req.behavior_id, argv[0], SUNOEM_BEHAVIORID_SIZE - 1);
+	strncpy((char*)getbehavior_req.behavior_id, argv[0], SUNOEM_BEHAVIORID_SIZE - 1);
 
 	memset(&req, 0, sizeof(req));
 	req.msg.netfn = IPMI_NETFN_SUNOEM;

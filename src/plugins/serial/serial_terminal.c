@@ -127,7 +127,7 @@ struct serial_term_request_ctx {
  */
 static const struct {
 	int baudinit;
-	int baudrate;
+	unsigned int baudrate;
 } rates[] = {
 	{ B2400, 2400 },
 	{ B9600, 9600 },

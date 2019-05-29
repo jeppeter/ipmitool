@@ -48,11 +48,10 @@
 # include <config.h>
 #endif
 
-/* From src/plugins/ipmi_intf.c: */
-uint16_t
-ipmi_intf_get_max_request_data_size(struct ipmi_intf * intf);
 
 extern int verbose;
+uint16_t
+ipmi_intf_get_max_request_data_size(struct ipmi_intf * intf);
 
 int HpmfwupgUpgrade(struct ipmi_intf *intf, char *imageFilename,
 		int activate, int, int);
@@ -1411,7 +1410,7 @@ HpmfwupgGetBufferFromFile(char *imageFilename,
 			sizeof(unsigned char),
 			pFwupgCtx->imageSize,
 			pImageFile);
-	if (ret != pFwupgCtx->imageSize) {
+	if (ret != (int)pFwupgCtx->imageSize) {
 		lprintf(LOG_ERR,
 				"Failed to read file %s size %d", 
 				imageFilename,
@@ -2333,7 +2332,7 @@ unsigned char
 HpmfwupgCalculateChecksum(unsigned char *pData, unsigned int length)
 {
 	unsigned char checksum = 0;
-	int dataIdx = 0;
+	unsigned int dataIdx = 0;
 	for (dataIdx = 0; dataIdx < length; dataIdx++) {
 		checksum += pData[dataIdx];
 	}

@@ -392,7 +392,7 @@ ipmi_event_fromsensor(struct ipmi_intf * intf, char * id, char * state, char * e
 	 */
 	case 3: case 4: case 5: case 6: case 8: case 9:
 	{
-		int x;
+		unsigned int x;
 		const char * digi_on[] = { "present", "assert", "limit",
 					   "fail", "yes", "on", "up" };
 		const char * digi_off[] = { "absent", "deassert", "nolimit",

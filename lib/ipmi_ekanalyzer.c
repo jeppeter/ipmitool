@@ -317,8 +317,10 @@ static void ipmi_ek_display_shelf_activation_record(
 static void ipmi_ek_display_shelf_ip_connection_record(
       struct ipmi_ek_multi_header * record );
 
+#if 0
 static void ipmi_ek_display_shelf_fan_geography_record(
       struct ipmi_ek_multi_header * record );
+#endif
 
 static void ipmi_ek_display_board_p2p_record(
       struct ipmi_ek_multi_header * record );
@@ -461,7 +463,7 @@ ipmi_ekanalyzer_main(struct ipmi_intf *__UNUSED__(intf), int argc, char **argv)
 	int file_type[MAX_FILE_NUMBER];
 	char *filename[MAX_FILE_NUMBER];
 	unsigned int argument_offset = 0;
-	unsigned int type_offset = 0;
+	int type_offset = 0;
 	/* list des multi record */
 	struct ipmi_ek_multi_header *list_head = NULL;
 	struct ipmi_ek_multi_header *list_record = NULL;
@@ -1132,7 +1134,7 @@ ipmi_ekanalyzer_ekeying_match( int argc, char * opt,
             struct ipmi_ek_multi_header * list_head[argc];
             struct ipmi_ek_multi_header * list_record[argc];
             struct ipmi_ek_multi_header * list_last[argc];
-            struct ipmi_ek_multi_header * pcarrier_p2p;
+            struct ipmi_ek_multi_header * pcarrier_p2p=NULL;
             int list = 0;
             int match_pair = 0;
 
@@ -3316,6 +3318,7 @@ ipmi_ek_display_shelf_ip_connection_record(struct ipmi_ek_multi_header *record)
 	}
 }
 
+#if 0
 /**************************************************************************
 *
 * Function name: ipmi_ek_display_shelf_fan_geography_record
@@ -3360,6 +3363,7 @@ ipmi_ek_display_shelf_fan_geography_record(struct ipmi_ek_multi_header *record)
 		fan_count --;
 	}
 }
+#endif
 
 /**************************************************************************
 *
@@ -3388,7 +3392,7 @@ ipmi_ek_display_board_p2p_record(struct ipmi_ek_multi_header *record)
 	guid_count = record->data[offset++];
 	printf("   GUID count: %2d\n", guid_count);
 	for (i = 0 ; i < guid_count; i++) {
-		int j;
+		unsigned int j;
 		printf("\tGUID: ");
 		for (j = 0; j < sizeof(struct fru_picmgext_guid); j++) {
 			printf("%02x", record->data[offset+j]);

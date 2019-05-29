@@ -72,8 +72,9 @@ _ipmi_get_channel_access(struct ipmi_intf *intf,
 		uint8_t get_volatile_settings)
 {
 	struct ipmi_rs *rsp;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint8_t data[2];
+	memset(&req, 0, sizeof(req));
 
 	if (!channel_access) {
 		return (-3);
@@ -115,9 +116,10 @@ _ipmi_get_channel_info(struct ipmi_intf *intf,
 		struct channel_info_t *channel_info)
 {
 	struct ipmi_rs *rsp;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	uint8_t data[1];
 
+	memset(&req, 0, sizeof(req));
 	if (!channel_info) {
 		return (-3);
 	}

@@ -596,13 +596,14 @@ parsed_guid_t ipmi_parse_guid(void *guid, ipmi_guid_mode_t guid_mode)
 	ipmi_guid_mode_t i;
 	ipmi_guid_t *ipmi_guid = guid;
 	rfc_guid_t *rfc_guid = guid;
-	parsed_guid_t parsed_guid = { 0 };
+	parsed_guid_t parsed_guid ;
 	uint32_t t_low[GUID_REAL_MODES];
 	uint16_t t_mid[GUID_REAL_MODES];
 	uint16_t t_hi[GUID_REAL_MODES];
 	uint16_t clk[GUID_REAL_MODES];
 	time_t seconds[GUID_REAL_MODES];
 	bool detect = false;
+	memset(&parsed_guid, 0, sizeof(parsed_guid));
 
 	/* Unless another mode is detected, default to dumping */
 	if (GUID_AUTO == guid_mode) {
@@ -1113,10 +1114,11 @@ static int
 ipmi_mc_set_watchdog(struct ipmi_intf * intf, int argc, char *argv[])
 {
 	struct ipmi_rs * rsp;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	unsigned char msg_data[6] = {0};
 	int rc = -1;
 	wdt_conf_t conf = {0};
+	memset(&req,0, sizeof(req));
 	bool options_error = parse_set_wdt_options(&conf, argc, argv);
 
 	/* Fill data bytes according to IPMI 2.0 Spec section 27.6 */
@@ -1448,8 +1450,9 @@ ipmi_mc_getsysinfo(struct ipmi_intf * intf, int param, int block, int set,
 {
 	uint8_t data[4];
 	struct ipmi_rs *rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 
+	memset(&req, 0, sizeof(req));
 	memset(buffer, 0, len);
 	memset(data, 0, 4);
 	req.msg.netfn = IPMI_NETFN_APP;
@@ -1502,8 +1505,9 @@ int
 ipmi_mc_setsysinfo(struct ipmi_intf * intf, int len, void *buffer)
 {
 	struct ipmi_rs *rsp = NULL;
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 
+	memset(&req, 0 , sizeof(req));
 	req.msg.netfn = IPMI_NETFN_APP;
 	req.msg.lun = 0;
 	req.msg.cmd = IPMI_SET_SYS_INFO;

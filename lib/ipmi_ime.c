@@ -181,7 +181,9 @@ static int  ImeUpdateRegisterUpdate(struct ipmi_intf *intf, tImeUpdateType type)
 static int  ImeImageCtxFromFile(
                                  char * imageFilename, 
                                  tImeUpdateImageCtx * pImageCtx);
+#if 0
 static int ImeUpdateShowStatus(struct ipmi_intf *intf);
+#endif
 
 static uint8_t ImeCrc8( uint32_t length, uint8_t * pBuf );
 
@@ -789,7 +791,7 @@ static int ImeUpdateRegisterUpdate(struct ipmi_intf *intf, tImeUpdateType type)
 
 
 
-
+#if 0
 static int ImeUpdateShowStatus(struct ipmi_intf *intf)
 {
    struct ipmi_rs * rsp;
@@ -864,7 +866,7 @@ static int ImeUpdateShowStatus(struct ipmi_intf *intf)
 
    return IME_SUCCESS;
 }
-
+#endif
 
 static int ImeImageCtxFromFile(
                                  char* imageFilename, 
@@ -884,7 +886,7 @@ static int ImeImageCtxFromFile(
       fseek(pImageFile, 0, SEEK_END);
       pImageCtx->size  = ftell(pImageFile); 
       if (pImageCtx->size <= 0) {
-         if (pImageCtx->size < 0)
+         if ((int)pImageCtx->size < 0)
             lprintf(LOG_ERR, "Error seeking %s. %s\n", imageFilename, strerror(errno));
          rc = IME_ERROR;
          fclose(pImageFile);

@@ -154,3 +154,86 @@ void log_level_set(int level)
 	logpriv->level = level;
 }
 
+
+void ipmi_log(int level,const char* file, int lineno, const char* fmt,...)
+{
+	va_list ap;
+	if (!logpriv) {
+		log_reinit();
+	}
+	if (!logpriv) {
+		return;
+	}
+
+	if (logpriv->level < level) {
+		return;
+	}
+
+	va_start(ap,fmt);
+	fprintf(stderr,"[%s:%d] ", file, lineno);
+	vfprintf(stderr,fmt,ap);
+	fprintf(stderr,"\n");
+	return;
+}
+
+
+void ipmi_buffer_log(int level, const char* file, int lineno, void* pbuf, int bufsize,const char* fmt,...)
+{
+	va_list ap;
+	unsigned char* pptr= (unsigned char*)pbuf;
+	int i;
+	unsigned char* plast = pptr;
+
+	if (!logpriv) {
+		log_reinit();
+	}
+	if (!logpriv) {
+		return;
+	}
+	if (logpriv->level < level) {
+		return ;
+	}
+
+	fprintf(stderr,"[%s:%d] ",file , lineno);
+	fprintf(stderr,"[%p] size[0x%x:%d]", pbuf, bufsize,bufsize);
+	if (fmt != NULL) {
+		va_start(ap, fmt);
+		vfprintf(stderr,fmt, ap);
+	}
+	for (i=0;i<bufsize;i++) {
+		if ((i % 16) == 0) {
+			if (i > 0) {
+				fprintf(stderr,"    ");
+				while(plast != pptr) {
+					if (*plast >= ' ' && *plast <= '~') {
+						fprintf(stderr,"%c", *plast);
+					} else {
+						fprintf(stderr, ".");
+					}
+					plast ++;
+				}
+			}
+			fprintf(stderr,"\n0x%08x", i);
+		}
+		fprintf(stderr," 0x%02x", *pptr);
+		pptr ++;
+	}
+
+	if (pptr != plast) {
+		while((i % 16) !=0 ) {
+			fprintf(stderr, "     ");
+			i ++;
+		}
+		fprintf(stderr,"    ");
+		while(plast != pptr) {
+			if (*plast >= ' ' && *plast <= '~') {
+				fprintf(stderr, "%c", *plast);
+			} else {
+				fprintf(stderr, ".");
+			}
+			plast ++;
+		}
+	}
+	fprintf(stderr,"\n");
+	return;
+}

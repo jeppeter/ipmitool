@@ -317,7 +317,7 @@ typedef struct {
 	BYTE netFn;
 	BYTE rsLun;	
 	BYTE dataLength;
-	BYTE data[1];	
+	BYTE data[256];	
 } ImbRequest;
 typedef struct {
    DWORD	flags;			/* request flags*/
@@ -359,7 +359,7 @@ typedef struct {
 #define ASYNC_SEQ_START		0
 typedef struct {
 	ImbAsyncSeq	thisSeq;
-	BYTE data[1];
+	BYTE data[256];
 } ImbAsyncResponse;
 #define MIN_ASYNC_RESP_SIZE	sizeof( ImbAsyncSeq )
 #define MAX_ASYNC_RESP_SIZE	(MIN_ASYNC_RESP_SIZE + MAX_IMB_PACKET_SIZE)

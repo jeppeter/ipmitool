@@ -65,9 +65,10 @@ int
 _ipmi_get_user_access(struct ipmi_intf *intf,
 		struct user_access_t *user_access_rsp)
 {
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	struct ipmi_rs *rsp;
 	uint8_t data[2];
+	memset(&req, 0, sizeof(req));
 	if (!user_access_rsp) {
 		return (-3);
 	}
@@ -107,9 +108,10 @@ _ipmi_get_user_access(struct ipmi_intf *intf,
 int
 _ipmi_get_user_name(struct ipmi_intf *intf, struct user_name_t *user_name_ptr)
 {
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	struct ipmi_rs *rsp;
 	uint8_t data[1];
+	memset(&req, 0, sizeof(req));
 	if (!user_name_ptr) {
 		return (-3);
 	}
@@ -145,8 +147,9 @@ _ipmi_set_user_access(struct ipmi_intf *intf,
 		uint8_t change_priv_limit_only)
 {
 	uint8_t data[4];
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	struct ipmi_rs *rsp;
+	memset(&req, 0, sizeof(req));
 	if (!user_access_req) {
 		return (-3);
 	}
@@ -191,10 +194,11 @@ _ipmi_set_user_password(struct ipmi_intf *intf, uint8_t user_id,
 		uint8_t operation, const char *password,
 		uint8_t is_twenty_byte)
 {
-	struct ipmi_rq req = {0};
+	struct ipmi_rq req;
 	struct ipmi_rs *rsp;
 	uint8_t *data;
 	uint8_t data_len = (is_twenty_byte) ? 22 : 18;
+	memset(&req, 0, sizeof(req));
 	data = malloc(sizeof(uint8_t) * data_len);
 	if (!data) {
 		return (-4);
@@ -205,7 +209,7 @@ _ipmi_set_user_password(struct ipmi_intf *intf, uint8_t user_id,
 	data[1] = 0x03 & operation;
 	if (password) {
 		size_t copy_len = strlen(password);
-		if (copy_len > (data_len - 2)) {
+		if ((int)copy_len > (int)(data_len - 2)) {
 			copy_len = data_len - 2;
 		} else if (copy_len < 1) {
 			copy_len = 0;

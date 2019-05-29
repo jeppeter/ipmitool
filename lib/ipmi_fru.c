@@ -47,6 +47,12 @@
 #include <time.h>
 #include <errno.h>
 
+/* From src/plugins/ipmi_intf.c: */
+uint16_t
+ipmi_intf_get_max_response_data_size(struct ipmi_intf * intf);
+uint16_t
+ipmi_intf_get_max_request_data_size(struct ipmi_intf * intf);
+
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -138,9 +144,11 @@ ipmi_fru_set_field_string_rebuild(struct ipmi_intf * intf, uint8_t fruId,
 											struct fru_info fru, struct fru_header header,
 											uint8_t f_type, uint8_t f_index, char *f_string);
 
+#if 0
 static void
 fru_area_print_multirec_bloc(struct ipmi_intf * intf, struct fru_info * fru,
 			uint8_t id, uint32_t offset);
+#endif
 int
 read_fru_area(struct ipmi_intf * intf, struct fru_info *fru, uint8_t id,
 			uint32_t offset, uint32_t length, uint8_t *frubuf);
@@ -877,6 +885,7 @@ read_fru_area_section(struct ipmi_intf * intf, struct fru_info *fru, uint8_t id,
 }
 
 
+#if 0
 static void
 fru_area_print_multirec_bloc(struct ipmi_intf * intf, struct fru_info * fru,
 			uint8_t id, uint32_t offset)
@@ -935,7 +944,7 @@ fru_area_print_multirec_bloc(struct ipmi_intf * intf, struct fru_info * fru,
 
 	free_n(&fru_data);
 }
-
+#endif
 
 /* fru_area_print_chassis  -  Print FRU Chassis Area
 *
@@ -1010,7 +1019,7 @@ fru_area_print_chassis(struct ipmi_intf * intf, struct fru_info * fru,
 
 	/* read any extra fields */
 	while ((i < fru_len) && (fru_data[i] != FRU_END_OF_FIELDS)) {
-		int j = i;
+		uint32_t j = i;
 		fru_area = get_fru_area_str(fru_data, &i);
 		if (fru_area) {
 			if (strlen(fru_area) > 0) {
@@ -1123,7 +1132,7 @@ fru_area_print_board(struct ipmi_intf * intf, struct fru_info * fru,
 
 	/* read any extra fields */
 	while ((i < fru_len) && (fru_data[i] != FRU_END_OF_FIELDS)) {
-		int j = i;
+		uint32_t j = i;
 		fru_area = get_fru_area_str(fru_data, &i);
 		if (fru_area) {
 			if (strlen(fru_area) > 0) {
@@ -1245,7 +1254,7 @@ fru_area_print_product(struct ipmi_intf * intf, struct fru_info * fru,
 
 	/* read any extra fields */
 	while ((i < fru_len) && (fru_data[i] != FRU_END_OF_FIELDS)) {
-		int j = i;
+		uint32_t j = i;
 		fru_area = get_fru_area_str(fru_data, &i);
 		if (fru_area) {
 			if (strlen(fru_area) > 0) {
@@ -1476,7 +1485,7 @@ ipmi_fru_query_new_value(uint8_t *data,int offset, size_t len)
 	}
 
 	if( answer == 'y' || answer == 'Y' ){
-		int i;
+		size_t i;
 		unsigned int *holder;
 
 		holder = malloc(len);
@@ -1718,7 +1727,7 @@ ipmi_fru_oemkontron_edit( int argc, char ** argv,uint8_t * fru_data,
 	bool hasChanged = false;
 	int start = off;
 	int offset = start;
-	int length = len;
+	uint32_t length = len;
 	int i;
 	uint8_t record_id = 0;
 	offset += sizeof(struct fru_multirec_oem_header);
@@ -1887,7 +1896,7 @@ ipmi_fru_oemkontron_edit( int argc, char ** argv,uint8_t * fru_data,
 
 			uint8_t record_checksum =0;
 			uint8_t header_checksum =0;
-			int index;
+			uint32_t index;
 
 			lprintf(LOG_DEBUG,"Initial record checksum : %x",h->record_checksum);
 			lprintf(LOG_DEBUG,"Initial header checksum : %x",h->header_checksum);
@@ -1935,8 +1944,8 @@ ipmi_fru_picmg_ext_edit(uint8_t * fru_data,
 {
 	bool hasChanged = false;
 	int start = off;
-	int offset = start;
-	int length = len;
+	uint32_t offset = start;
+	uint32_t length = len;
 	offset += sizeof(struct fru_multirec_oem_header);
 
 	switch (oh->record_id)
@@ -2006,7 +2015,7 @@ ipmi_fru_picmg_ext_edit(uint8_t * fru_data,
 
 		uint8_t record_checksum =0;
 		uint8_t header_checksum =0;
-		int index;
+		uint32_t index;
 
 		lprintf(LOG_DEBUG,"Initial record checksum : %x",h->record_checksum);
 		lprintf(LOG_DEBUG,"Initial header checksum : %x",h->header_checksum);
@@ -2281,7 +2290,7 @@ static void ipmi_fru_picmg_ext_print(uint8_t * fru_data, int off, int length)
 			guid_count = fru_data[offset++];
 			printf("      GUID count: %2d\n", guid_count);
 			for (i = 0 ; i < guid_count; i++ ) {
-				int j;
+				uint32_t j;
 				printf("        GUID [%2d]: 0x", i);
 
 				for (j=0; j < sizeof(struct fru_picmgext_guid);
@@ -2527,7 +2536,7 @@ static void ipmi_fru_picmg_ext_print(uint8_t * fru_data, int off, int length)
 				guid_count = fru_data[offset];
 				printf("      GUID count: %2d\n", guid_count);
 				for (i = 0 ; i < guid_count; i++) {
-					int j;
+					uint32_t j;
 					printf("        GUID %2d: ", i);
 					for (j=0; j < sizeof(struct fru_picmgext_guid);
 							j++) {
@@ -2840,7 +2849,7 @@ static void ipmi_fru_picmg_ext_print(uint8_t * fru_data, int off, int length)
 							(feature > 1) & 1,
 							(feature&1)?"Source":"Receiver");
 					printf("            Family:  0x%02x  - AccLVL: 0x%02x\n", family, accuracy);
-					printf("            FRQ: %-9ld - min: %-9ld - max: %-9ld\n",
+					printf("            FRQ: %-9d - min: %-9d - max: %-9d\n",
 							freq, min_freq, max_freq);
 				}
 				printf("\n");
@@ -3106,7 +3115,7 @@ ipmi_fru_print_all(struct ipmi_intf * intf)
 	struct ipmi_sdr_iterator * itr;
 	struct sdr_get_rs * header;
 	struct sdr_record_fru_locator * fru;
-	int rc;
+	int rc=-1;
 	struct ipmi_rs * rsp;
 	struct ipmi_rq req;
 	struct ipm_devid_rsp *devid;
@@ -4649,7 +4658,7 @@ f_type, uint8_t f_index, char *f_string)
 	struct fru_header header;
 	uint8_t msg_data[4];
 	uint8_t checksum;
-	int i = 0;
+	uint32_t i = 0;
 	int rc = 1;
 	uint8_t *fru_data = NULL;
 	uint8_t *fru_area = NULL;
@@ -4873,8 +4882,8 @@ ipmi_fru_set_field_string_rebuild(struct ipmi_intf * intf, uint8_t fruId,
 	uint32_t fru_section_len, header_offset;
 	uint32_t chassis_offset, board_offset, product_offset;
 	uint32_t chassis_len, board_len, product_len, product_len_new;
-	int      num_byte_change = 0, padding_len = 0;
-	uint32_t counter;
+	int      num_byte_change = 0,padding_len = 0;
+	int      counter;
 	unsigned char cksum;
 	int rc = 1;
 
@@ -4963,14 +4972,14 @@ ipmi_fru_set_field_string_rebuild(struct ipmi_intf * intf, uint8_t fruId,
 
 	/*************************
 	4) Check number of padding bytes and bytes changed */
-	for(counter = 2; counter < fru_section_len; counter ++)
+	for(counter = 2; counter < (int)fru_section_len; counter ++)
 	{
 		if(*(fru_data_old + (header_offset + fru_section_len - counter)) == 0)
 			padding_len ++;
 		else
 			break;
 	}
-	num_byte_change = strlen(f_string) - strlen(fru_area);
+	num_byte_change = strlen(f_string) - strlen((char*)fru_area);
 
 	#ifdef DBG_RESIZE_FRU
 	printf("Padding Length: %u\n", padding_len);
@@ -5078,7 +5087,7 @@ ipmi_fru_set_field_string_rebuild(struct ipmi_intf * intf, uint8_t fruId,
 		{
 			unsigned char * pfru_header = (unsigned char *) &header;
 			header.checksum = 0;
-			for(counter = 0; counter < (sizeof(struct fru_header) -1); counter ++)
+			for(counter = 0; counter < (int)(sizeof(struct fru_header) -1); counter ++)
 			{
 				header.checksum += pfru_header[counter];
 			}
@@ -5091,7 +5100,7 @@ ipmi_fru_set_field_string_rebuild(struct ipmi_intf * intf, uint8_t fruId,
 					remaining_offset,
 					((header.offset.product) * 8) + product_len_new
 				);
-		if(((header.offset.product * 8) + product_len_new - remaining_offset) < 0)
+		if(((int)((header.offset.product * 8) + product_len_new - remaining_offset)) < 0)
 		{
 			memcpy(
 						fru_data_new + (header.offset.product * 8) + product_len_new,
@@ -5136,7 +5145,7 @@ ipmi_fru_set_field_string_rebuild(struct ipmi_intf * intf, uint8_t fruId,
 		memcpy((fru_data_new + fru_field_offset_tmp + 1 + 
 			strlen(f_string)),
 			(fru_data_old + fru_field_offset_tmp + 1 + 
-			strlen(fru_area)),
+			strlen((char*)fru_area)),
 		((fru_data_old + header_offset + fru_section_len - 1) -
 		(fru_data_old + fru_field_offset_tmp + strlen(f_string) + 1)));
 
@@ -5149,7 +5158,7 @@ ipmi_fru_set_field_string_rebuild(struct ipmi_intf * intf, uint8_t fruId,
 
 		/* Calculate New Checksum */
 		cksum = 0;
-		for( counter = 0; counter <fru_section_len-1; counter ++ )
+		for( counter = 0; counter < (int)(fru_section_len-1); counter ++ )
 		{
 			cksum += *(fru_data_new + header_offset + counter);
 		}

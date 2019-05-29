@@ -614,7 +614,7 @@ ipmi_isol_red_pill(struct ipmi_intf * intf)
 				
 				if (numRead > 0)
 				{
-					int rc = processiSolUserInput(intf, buffer, numRead);
+					int rc = processiSolUserInput(intf, (uint8_t*)buffer, numRead);
 					
 					if (rc)
 					{

@@ -741,7 +741,7 @@ ipmi_lan_poll_single(struct ipmi_intf * intf)
 				return (struct ipmi_rs *)1;
 			};
 
-			uint8_t target_cmd = entry->req.msg.target_cmd;
+			//uint8_t target_cmd = entry->req.msg.target_cmd;
 
 			lprintf(LOG_DEBUG+2, "IPMI Request Match found");
 
@@ -1908,7 +1908,7 @@ ipmi_lanplus_build_v2x_ipmi_cmd(
 		entry = ipmi_req_add_entry(intf, req, curr_seq);
 	/* it's a bridge command */
 	} else {
-		unsigned char backup_cmd;
+		//unsigned char backup_cmd;
 
 		/* Add entry for cmd */
 		entry = ipmi_req_add_entry(intf, req, curr_seq);
@@ -2140,7 +2140,7 @@ ipmi_lanplus_send_payload(
 	 */
 	saved_timeout = session->timeout;
 	while (try < intf->ssn_params.retry) {
-		//ltime = time(NULL);
+		ltime = time(NULL);
 
 		if (xmit) {
 			ltime = time(NULL);

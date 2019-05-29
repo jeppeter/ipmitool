@@ -536,10 +536,10 @@ ipmi_tsol_main(struct ipmi_intf *intf, int argc, char **argv)
 		/* send keepalive packet */
 		tsol_keepalive(intf);
 
-		if ((fds[0].revents & POLLIN) && (sizeof(out_buff) > out_buff_fill)) {
+		if ((fds[0].revents & POLLIN) && (((int)sizeof(out_buff)) > out_buff_fill)) {
 			socklen_t sin_len = sizeof(sin);
 			int buff_size = sizeof(buff);
-			if ((sizeof(out_buff) - out_buff_fill + 4) < buff_size) {
+			if (((int)(sizeof(out_buff) - out_buff_fill + 4)) < buff_size) {
 				buff_size = (sizeof(out_buff) - out_buff_fill) + 4;
 				if ((buff_size - 4) <= 0) {
 					buff_size = 0;
@@ -557,7 +557,7 @@ ipmi_tsol_main(struct ipmi_intf *intf, int argc, char **argv)
 				out_buff_fill += length;
 			}
 		}
-		if ((fds[1].revents & POLLIN) && (sizeof(in_buff) > in_buff_fill)) {
+		if ((fds[1].revents & POLLIN) && (((int)sizeof(in_buff)) > in_buff_fill)) {
 			/* Read from keyboard */
 			result = read(fileno(stdin), in_buff + in_buff_fill,
 					sizeof(in_buff) - in_buff_fill);
