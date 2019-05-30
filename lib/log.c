@@ -158,9 +158,7 @@ void log_level_set(int level)
 void ipmi_log(int level,const char* file, int lineno, const char* fmt,...)
 {
 	va_list ap;
-	if (!logpriv) {
-		log_reinit();
-	}
+
 	if (!logpriv) {
 		return;
 	}
@@ -185,11 +183,9 @@ void ipmi_buffer_log(int level, const char* file, int lineno, void* pbuf, int bu
 	unsigned char* plast = pptr;
 
 	if (!logpriv) {
-		log_reinit();
-	}
-	if (!logpriv) {
 		return;
 	}
+
 	if (logpriv->level < level) {
 		return ;
 	}
