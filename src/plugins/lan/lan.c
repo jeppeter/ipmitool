@@ -304,6 +304,8 @@ ipmi_lan_recv_packet(struct ipmi_intf * intf)
 	rsp.data[ret] = '\0';
 	rsp.data_len = ret;
 
+	IPMI_BUFFER_EMERG(rsp.data, rsp.data_len, "recv data");
+
 	if (verbose > 2)
 		printbuf(rsp.data, rsp.data_len, "recv_packet");
 
