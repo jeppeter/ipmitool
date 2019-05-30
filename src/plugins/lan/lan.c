@@ -466,11 +466,13 @@ ipmi_lan_poll_recv(struct ipmi_intf * intf)
 
 		/* parse response headers */
 		memcpy(&rmcp_rsp, rsp->data, 4);
+		IPMI_BUFFER_EMERG(&rmcp_rsp, sizeof(rmcp_rsp), "rmcp header class [0x%x]", rmcp_rsp.class);
 
 		switch (rmcp_rsp.class) {
 		case RMCP_CLASS_ASF:
 			/* ping response packet */
 			rv = ipmi_handle_pong(rsp);
+			IPMI_EMERG("rv [%d]", rv);
 			return (rv <= 0) ? NULL : rsp;
 		case RMCP_CLASS_IPMI:
 			/* handled by rest of function */
@@ -1834,29 +1836,37 @@ ipmi_lan_activate_session(struct ipmi_intf * intf)
 	/* don't fail on ping because its not always supported.
 	 * Supermicro's IPMI LAN 1.5 cards don't tolerate pings.
 	 */
-	if (!ipmi_oem_active(intf, "supermicro"))
+	if (!ipmi_oem_active(intf, "supermicro")){
+		IPMI_EMERG(" ");
 		ipmi_lan_ping(intf);
+	}
 
 	/* Some particular Intel boards need special help
 	 */
-	if (ipmi_oem_active(intf, "intelwv2"))
+	if (ipmi_oem_active(intf, "intelwv2")){
+		IPMI_EMERG(" ");
 		ipmi_lan_thump_first(intf);
+	}
 
+	IPMI_EMERG(" ");
 	rc = ipmi_get_auth_capabilities_cmd(intf);
 	if (rc < 0) {
 		goto fail;
 	}
 
+	IPMI_EMERG(" ");
 	rc = ipmi_get_session_challenge_cmd(intf);
 	if (rc < 0)
 		goto fail;
 
+	IPMI_EMERG(" ");
 	rc = ipmi_activate_session_cmd(intf);
 	if (rc < 0)
 		goto fail;
 
 	intf->abort = 0;
 
+	IPMI_EMERG(" ");
 	rc = ipmi_set_session_privlvl_cmd(intf);
 	if (rc < 0)
 		goto close_fail;
@@ -1919,6 +1929,8 @@ ipmi_lan_open(struct ipmi_intf * intf)
 		lprintf(LOG_ERR, "Could not open socket!");
 		return -1;
 	}
+
+	IPMI_EMERG(" ");
 
 	s = (struct ipmi_session *)malloc(sizeof(struct ipmi_session));
 	if (!s) {
