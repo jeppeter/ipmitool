@@ -759,28 +759,34 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 	/* rmcp header */
 	memcpy(msg, &rmcp, sizeof(rmcp));
 	len = sizeof(rmcp);
+	IPMI_BUFFER_EMERG(msg,len, "msglen rmcp");
 
 	/* ipmi session header */
 	msg[len++] = s->active ? s->authtype : 0;
+	IPMI_BUFFER_EMERG(msg,len, "authtype");
 
 	msg[len++] = s->in_seq & 0xff;
 	msg[len++] = (s->in_seq >> 8) & 0xff;
 	msg[len++] = (s->in_seq >> 16) & 0xff;
 	msg[len++] = (s->in_seq >> 24) & 0xff;
+	IPMI_BUFFER_EMERG(msg, len, "in_seq");
 	memcpy(msg+len, &s->session_id, 4);
 	len += 4;
+	IPMI_BUFFER_EMERG(msg, len, "session_id");
 
 	/* ipmi session authcode */
 	if (s->active && s->authtype) {
 		ap = len;
 		memcpy(msg+len, s->authcode, 16);
 		len += 16;
+		IPMI_BUFFER_EMERG(msg, len, "authcode");
 	}
 
 	/* message length */
 	if ((intf->target_addr == our_address) || !bridge_possible) {
 		entry->bridging_level = 0;
 		msg[len++] = req->msg.data_len + 7;
+		IPMI_BUFFER_EMERG(msg,len, "bridging_level 0");
 		cs = mp = len;
 	} else {
 		/* bridged request: encapsulate w/in Send Message */
@@ -788,32 +794,41 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 		msg[len++] = req->msg.data_len + 15 +
 		  (intf->transit_addr != intf->my_addr && intf->transit_addr != 0 ? 8 : 0);
 		cs = mp = len;
+		IPMI_BUFFER_EMERG(msg,len, "bridging_level 1");
 		msg[len++] = IPMI_BMC_SLAVE_ADDR;
 		msg[len++] = IPMI_NETFN_APP << 2;
+		IPMI_BUFFER_EMERG(msg,len, "IPMI_NETFN_APP");
 		tmp = len - cs;
 		msg[len++] = ipmi_csum(msg+cs, tmp);
+		IPMI_BUFFER_EMERG(msg,len, "ipmi_csum");
 		cs2 = len;
 		msg[len++] = IPMI_REMOTE_SWID;
 		msg[len++] = curr_seq << 2;
 		msg[len++] = 0x34;			/* Send Message rqst */
+		IPMI_BUFFER_EMERG(msg,len, "msg request");
 		entry->req.msg.target_cmd = entry->req.msg.cmd;	/* Save target command */
 		entry->req.msg.cmd = 0x34;		/* (fixup request entry) */
 
 		if (intf->transit_addr == intf->my_addr || intf->transit_addr == 0) {
 		        msg[len++] = (0x40|intf->target_channel); /* Track request*/
+				IPMI_BUFFER_EMERG(msg,len,"track request");
 		} else {
 		        entry->bridging_level++;
-               		msg[len++] = (0x40|intf->transit_channel); /* Track request*/
+               	msg[len++] = (0x40|intf->transit_channel); /* Track request*/
+               	IPMI_BUFFER_EMERG(msg,len, "track request");
 			cs = len;
 			msg[len++] = intf->transit_addr;
 			msg[len++] = IPMI_NETFN_APP << 2;
+			IPMI_BUFFER_EMERG(msg,len, "transit_addr");
 			tmp = len - cs;
 			msg[len++] = ipmi_csum(msg+cs, tmp);
+			IPMI_BUFFER_EMERG(msg,len, "ipmi_csum");
 			cs3 = len;
 			msg[len++] = intf->my_addr;
 			msg[len++] = curr_seq << 2;
 			msg[len++] = 0x34;			/* Send Message rqst */
 			msg[len++] = (0x40|intf->target_channel); /* Track request */
+			IPMI_BUFFER_EMERG(msg,len, "track request");
 		}
 		cs = len;
 	}
@@ -821,19 +836,26 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 	/* ipmi message header */
 	msg[len++] = entry->bridging_level ? intf->target_addr : IPMI_BMC_SLAVE_ADDR;
 	msg[len++] = req->msg.netfn << 2 | (req->msg.lun & 3);
+	IPMI_BUFFER_EMERG(msg , len, "bridging_level netfn");
 	tmp = len - cs;
 	msg[len++] = ipmi_csum(msg+cs, tmp);
+	IPMI_BUFFER_EMERG(msg,len, "ipmi_csum");
 	cs = len;
 
-	if (!entry->bridging_level)
+	if (!entry->bridging_level){
 		msg[len++] = IPMI_REMOTE_SWID;
+		IPMI_BUFFER_EMERG(msg,len, "IPMI_REMOTE_SWID");
+	}
    /* Bridged message */ 
-	else if (entry->bridging_level) 
+	else if (entry->bridging_level) {
 		msg[len++] = intf->my_addr;
+		IPMI_BUFFER_EMERG(msg, len, "my_addr");
+	}
    
 	entry->rq_seq = curr_seq;
 	msg[len++] = entry->rq_seq << 2;
 	msg[len++] = req->msg.cmd;
+	IPMI_BUFFER_EMERG(msg, len, "rq_seq cmd");
 
 	lprintf(LOG_DEBUG+1, ">> IPMI Request Session Header (level %d)", entry->bridging_level);
 	lprintf(LOG_DEBUG+1, ">>   Authtype   : %s",
@@ -853,20 +875,24 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 	if (req->msg.data_len) {
  		memcpy(msg+len, req->msg.data, req->msg.data_len);
 		len += req->msg.data_len;
+		IPMI_BUFFER_EMERG(msg,len, "copy data_len");
 	}
 
 	/* second checksum */
 	tmp = len - cs;
 	msg[len++] = ipmi_csum(msg+cs, tmp);
+	IPMI_BUFFER_EMERG(msg, len, "ipmi_csum");
 
 	/* bridged request: 2nd checksum */
 	if (entry->bridging_level) {
 		if (intf->transit_addr != intf->my_addr && intf->transit_addr != 0) {
 			tmp = len - cs3;
 			msg[len++] = ipmi_csum(msg+cs3, tmp);
+			IPMI_BUFFER_EMERG(msg,len, "ipmi_csum");
 		}
 		tmp = len - cs2;
 		msg[len++] = ipmi_csum(msg+cs2, tmp);
+		IPMI_BUFFER_EMERG(msg,len, "ipmi_csum");
 	}
 
 	if (s->active) {
@@ -879,10 +905,12 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 		case IPMI_SESSION_AUTHTYPE_MD5:
 			temp = ipmi_auth_md5(s, msg+mp, msg[mp-1]);
 			memcpy(msg+ap, temp, 16);
+			IPMI_BUFFER_EMERG(msg,len, "copy auth_md5");
 			break;
 		case IPMI_SESSION_AUTHTYPE_MD2:
 			temp = ipmi_auth_md2(s, msg+mp, msg[mp-1]);
 			memcpy(msg+ap, temp, 16);
+			IPMI_BUFFER_EMERG(msg,len, "copy auth_md2");
 			break;
 		}
 	}
