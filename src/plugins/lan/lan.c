@@ -759,34 +759,34 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 	/* rmcp header */
 	memcpy(msg, &rmcp, sizeof(rmcp));
 	len = sizeof(rmcp);
-	IPMI_BUFFER_EMERG(msg,len, "msglen rmcp");
+	//IPMI_BUFFER_EMERG(msg,len, "msglen rmcp");
 
 	/* ipmi session header */
 	msg[len++] = s->active ? s->authtype : 0;
-	IPMI_BUFFER_EMERG(msg,len, "authtype");
+	//IPMI_BUFFER_EMERG(msg,len, "authtype");
 
 	msg[len++] = s->in_seq & 0xff;
 	msg[len++] = (s->in_seq >> 8) & 0xff;
 	msg[len++] = (s->in_seq >> 16) & 0xff;
 	msg[len++] = (s->in_seq >> 24) & 0xff;
-	IPMI_BUFFER_EMERG(msg, len, "in_seq");
+	//IPMI_BUFFER_EMERG(msg, len, "in_seq");
 	memcpy(msg+len, &s->session_id, 4);
 	len += 4;
-	IPMI_BUFFER_EMERG(msg, len, "session_id");
+	//IPMI_BUFFER_EMERG(msg, len, "session_id");
 
 	/* ipmi session authcode */
 	if (s->active && s->authtype) {
 		ap = len;
 		memcpy(msg+len, s->authcode, 16);
 		len += 16;
-		IPMI_BUFFER_EMERG(msg, len, "authcode");
+		//IPMI_BUFFER_EMERG(msg, len, "authcode");
 	}
 
 	/* message length */
 	if ((intf->target_addr == our_address) || !bridge_possible) {
 		entry->bridging_level = 0;
 		msg[len++] = req->msg.data_len + 7;
-		IPMI_BUFFER_EMERG(msg,len, "bridging_level 0");
+		//IPMI_BUFFER_EMERG(msg,len, "bridging_level 0");
 		cs = mp = len;
 	} else {
 		/* bridged request: encapsulate w/in Send Message */
@@ -836,15 +836,15 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 	/* ipmi message header */
 	msg[len++] = entry->bridging_level ? intf->target_addr : IPMI_BMC_SLAVE_ADDR;
 	msg[len++] = req->msg.netfn << 2 | (req->msg.lun & 3);
-	IPMI_BUFFER_EMERG(msg , len, "bridging_level netfn");
+	//IPMI_BUFFER_EMERG(msg , len, "bridging_level netfn");
 	tmp = len - cs;
 	msg[len++] = ipmi_csum(msg+cs, tmp);
-	IPMI_BUFFER_EMERG(msg,len, "ipmi_csum");
+	//IPMI_BUFFER_EMERG(msg,len, "ipmi_csum");
 	cs = len;
 
 	if (!entry->bridging_level){
 		msg[len++] = IPMI_REMOTE_SWID;
-		IPMI_BUFFER_EMERG(msg,len, "IPMI_REMOTE_SWID");
+		//IPMI_BUFFER_EMERG(msg,len, "IPMI_REMOTE_SWID");
 	}
    /* Bridged message */ 
 	else if (entry->bridging_level) {
@@ -855,7 +855,7 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 	entry->rq_seq = curr_seq;
 	msg[len++] = entry->rq_seq << 2;
 	msg[len++] = req->msg.cmd;
-	IPMI_BUFFER_EMERG(msg, len, "rq_seq cmd");
+	//IPMI_BUFFER_EMERG(msg, len, "rq_seq cmd");
 
 	lprintf(LOG_DEBUG+1, ">> IPMI Request Session Header (level %d)", entry->bridging_level);
 	lprintf(LOG_DEBUG+1, ">>   Authtype   : %s",
@@ -875,13 +875,13 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 	if (req->msg.data_len) {
  		memcpy(msg+len, req->msg.data, req->msg.data_len);
 		len += req->msg.data_len;
-		IPMI_BUFFER_EMERG(msg,len, "copy data_len");
+		//IPMI_BUFFER_EMERG(msg,len, "copy data_len");
 	}
 
 	/* second checksum */
 	tmp = len - cs;
 	msg[len++] = ipmi_csum(msg+cs, tmp);
-	IPMI_BUFFER_EMERG(msg, len, "ipmi_csum");
+	//IPMI_BUFFER_EMERG(msg, len, "ipmi_csum");
 
 	/* bridged request: 2nd checksum */
 	if (entry->bridging_level) {
