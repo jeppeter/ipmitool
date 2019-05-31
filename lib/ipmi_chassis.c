@@ -57,6 +57,7 @@ ipmi_chassis_power_status(struct ipmi_intf * intf)
 	req.msg.cmd = 0x1;
 	req.msg.data_len = 0;
 
+	IPMI_DEBUG("netfn %d[0x%x]", req.msg.netfn, req.msg.netfn);
 	rsp = intf->sendrecv(intf, &req);
 	if (!rsp) {
 		lprintf(LOG_ERR, "Unable to get Chassis Power Status");

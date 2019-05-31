@@ -377,9 +377,9 @@ ipmi_raw_main(struct ipmi_intf * intf, int argc, char ** argv)
 
 	printbuf(req.msg.data, req.msg.data_len, "RAW REQUEST");
 
-	IPMI_BUFFER_EMERG(req.msg.data, req.msg.data_len, "data raw ");
+	IPMI_BUFFER_DEBUG(req.msg.data, req.msg.data_len, "data raw ");
 	rsp = intf->sendrecv(intf, &req);
-	IPMI_EMERG("data raw recv");
+	IPMI_DEBUG("data raw recv");
 
 	if (!rsp) {
 		lprintf(LOG_ERR, "Unable to send RAW command "

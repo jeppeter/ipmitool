@@ -834,7 +834,7 @@ ipmi_main(int argc, char ** argv,
 		}
 	}
 
-	IPMI_EMERG(" ");
+	IPMI_DEBUG(" ");
 	/* load interface */
 	ipmi_main_intf = ipmi_intf_load(intfname);
 	if (!ipmi_main_intf) {
@@ -852,7 +852,7 @@ ipmi_main(int argc, char ** argv,
 		goto out_free;
 	}
 
-	IPMI_EMERG(" ");
+	IPMI_DEBUG(" ");
 	/* set session variables */
 	if (hostname)
 		ipmi_intf_session_set_hostname(ipmi_main_intf, hostname);
@@ -876,7 +876,7 @@ ipmi_main(int argc, char ** argv,
 	if (timeout > 0)
 		ipmi_intf_session_set_timeout(ipmi_main_intf, timeout);
 
-	IPMI_EMERG(" ");
+	IPMI_DEBUG(" ");
 	ipmi_intf_session_set_lookupbit(ipmi_main_intf, lookupbit);
 	ipmi_intf_session_set_sol_escape_char(ipmi_main_intf, sol_escape_char);
 #ifdef IPMI_INTF_LANPLUS
@@ -889,7 +889,7 @@ ipmi_main(int argc, char ** argv,
 	ipmi_main_intf->devfile = devfile;
 
 	ipmi_main_intf->ai_family = ai_family;
-	IPMI_EMERG(" ");
+	IPMI_DEBUG(" ");
 	/* Open the interface with the specified or default IPMB address */
 	ipmi_main_intf->my_addr = arg_addr ? arg_addr : IPMI_BMC_SLAVE_ADDR;
 	if (ipmi_main_intf->open) {
@@ -898,7 +898,9 @@ ipmi_main(int argc, char ** argv,
 		}
 	}
 
+	IPMI_DEBUG(" ");
 	if (!ipmi_oem_active(ipmi_main_intf, "i82571spt")) {
+		IPMI_DEBUG(" ");
 		/*
 		 * Attempt picmg/vita discovery of the actual interface
 		 * address, unless the users specified an address.
@@ -912,6 +914,7 @@ ipmi_main(int argc, char ** argv,
 	}
 
 	if (arg_addr) {
+		IPMI_DEBUG(" ");
 		addr = arg_addr;
 	} else if (!ipmi_oem_active(ipmi_main_intf, "i82571spt")) {
 		lprintf(LOG_DEBUG, "Acquire IPMB address");
@@ -919,7 +922,7 @@ ipmi_main(int argc, char ** argv,
 		lprintf(LOG_INFO,  "Discovered IPMB address 0x%x", addr);
 	}
 
-	IPMI_EMERG(" ");
+	IPMI_DEBUG(" ");
 
 	/*
 	 * If we discovered the ipmb address and it is not the same as what we
@@ -974,7 +977,7 @@ ipmi_main(int argc, char ** argv,
 					   ipmi_main_intf->target_ipmb_addr);
 		}
 	}
-	IPMI_EMERG(" ");
+	IPMI_DEBUG(" ");
 
 	/* set target LUN (for RAW command) */
 	ipmi_main_intf->target_lun = target_lun ;
@@ -1012,7 +1015,7 @@ ipmi_main(int argc, char ** argv,
 	}
 
 	ipmi_main_intf->cmdlist = cmdlist;
-	IPMI_EMERG(" ");
+	IPMI_DEBUG(" ");
 
 	/* now we finally run the command */
 	if (argc-optind > 0)
