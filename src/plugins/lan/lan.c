@@ -880,6 +880,7 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 
 	/* second checksum */
 	tmp = len - cs;
+	IPMI_BUFFER_DEBUG(msg+cs, tmp, "check sum data");
 	msg[len++] = ipmi_csum(msg+cs, tmp);
 	//IPMI_BUFFER_DEBUG(msg, len, "ipmi_csum");
 

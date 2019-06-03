@@ -935,6 +935,7 @@ ipmi_main(int argc, char ** argv,
 			 * Some interfaces need special handling
 			 * when changing local address
 			 */
+			IPMI_DEBUG(" ");
 			(void)ipmi_main_intf->set_my_addr(ipmi_main_intf, addr);
 		}
 
@@ -994,10 +995,12 @@ ipmi_main(int argc, char ** argv,
 
 	/* parse local SDR cache if given */
 	if (sdrcache) {
+		IPMI_DEBUG(" ");
 		ipmi_sdr_list_cache_fromfile(sdrcache);
 	}
 	/* Parse SEL OEM file if given */
 	if (seloem) {
+		IPMI_DEBUG(" ");
 		ipmi_sel_oem_init(seloem);
 	}
 
