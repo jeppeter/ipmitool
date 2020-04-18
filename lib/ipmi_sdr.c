@@ -3156,6 +3156,7 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 	 * transport buffer size.  (completion code 0xca)
 	 */
 	while (i < len) {
+		IPMI_ERR("i[%d] < len[%d]", i, len);
 		sdr_rq.length = (len - i < sdr_max_read_len) ?
 		    len - i : sdr_max_read_len;
 		sdr_rq.offset = i + 5;	/* 5 header bytes */
@@ -3169,10 +3170,12 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 		    if (sdr_max_read_len > 0) {
 			/* no response may happen if requests are bridged
 			   and too many bytes are requested */
+		    IPMI_ERR(" ");
 			continue;
 		    } else {
 			free(data);
 			data = NULL;
+			IPMI_ERR(" ");
 			return NULL;
 		    }
 		}
@@ -3193,6 +3196,7 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
                                       &(itr->reservation)) < 0) {
 				free(data);
 				data = NULL;
+				IPMI_ERR(" ");
 				return NULL;
 			}
 			sdr_rq.reserve_id = itr->reservation;
@@ -3203,13 +3207,15 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 		if (rsp->ccode || rsp->data_len == 0) {
 			free(data);
 			data = NULL;
+			IPMI_ERR(" ");
 			return NULL;
 		}
 
+		IPMI_BUFFER_ERR(rsp->data + 2, sdr_rq.length, "receive data");
 		memcpy(data + i, rsp->data + 2, sdr_rq.length);
 		i += sdr_max_read_len;
 	}
-
+	IPMI_ERR(" ");
 	return data;
 }
 
@@ -3415,6 +3421,11 @@ ipmi_sdr_find_sdr_bynumtype(struct ipmi_intf *intf, uint16_t gen_id, uint8_t num
 			IPMI_ERR("size of sdr_record_common_sensor [%d]", sizeof(struct sdr_record_common_sensor));
 			sdrr->record.common =
 			    (struct sdr_record_common_sensor *) rec;
+			IPMI_ERR("num [%d] gen_id [%d] type [%d]", num,gen_id & 0xff,type);
+			IPMI_ERR("sensor_num [%d] owner_id [%d] sensor_type [%d]",
+				sdrr->record.common->keys.sensor_num,
+				sdrr->record.common->keys.owner_id,
+				sdrr->record.common->sensor.type);
 			if (sdrr->record.common->keys.sensor_num == num
 			    && sdrr->record.common->keys.owner_id == (gen_id & 0x00ff)
 			    && sdrr->record.common->sensor.type == type)
