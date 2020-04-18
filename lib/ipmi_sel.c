@@ -1660,7 +1660,6 @@ ipmi_sel_get_std_entry(struct ipmi_intf * intf, uint16_t id,
 
 	/* save next entry id */
 	next = (rsp->data[1] << 8) | rsp->data[0];
-
 	lprintf(LOG_DEBUG, "SEL Entry: %s", buf2str(rsp->data+2, rsp->data_len-2));
 	memset(evt, 0, sizeof(*evt));
   
@@ -1698,6 +1697,7 @@ ipmi_sel_get_std_entry(struct ipmi_intf * intf, uint16_t id,
 	/* save response into SEL event structure */
 	evt->record_id = (rsp->data[3] << 8) | rsp->data[2];
 	evt->record_type = rsp->data[4];
+	IPMI_BUFFER_ERR(rsp->data, rsp->data_len, "rsp data");
 	if (evt->record_type < 0xc0)
 	{
     		evt->sel_type.standard_type.timestamp = (rsp->data[8] << 24) |	(rsp->data[7] << 16) |
@@ -1773,13 +1773,16 @@ ipmi_sel_print_std_entry(struct ipmi_intf * intf, struct sel_event_record * evt)
 	struct sdr_record_list * sdr = NULL;
 	int data_count;
 
+	IPMI_DEBUG(" ");
 	if (sel_extended && (evt->record_type < 0xc0))
 		sdr = ipmi_sdr_find_sdr_bynumtype(intf, evt->sel_type.standard_type.gen_id, evt->sel_type.standard_type.sensor_num, evt->sel_type.standard_type.sensor_type);
 
 
+	IPMI_DEBUG(" ");
 	if (!evt)
 		return;
 
+	IPMI_DEBUG(" ");
 	if (csv_output)
 		printf("%x,", evt->record_id);
 	else
@@ -2005,9 +2008,11 @@ ipmi_sel_print_std_entry_verbose(struct ipmi_intf * intf, struct sel_event_recor
   char * description;
   int data_count;
   	
+  	IPMI_DEBUG(" ");
 	if (!evt)
 		return;
 
+	IPMI_DEBUG(" ");
 	printf("SEL Record ID          : %04x\n", evt->record_id);
 
 	if (evt->record_type == 0xf0)
@@ -2255,6 +2260,7 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 	req.msg.netfn = IPMI_NETFN_STORAGE;
 	req.msg.cmd = IPMI_CMD_GET_SEL_INFO;
 
+	IPMI_DEBUG(" ");
 	rsp = intf->sendrecv(intf, &req);
 	if (!rsp) {
 		lprintf(LOG_ERR, "Get SEL Info command failed");
@@ -2265,6 +2271,7 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 		       val2str(rsp->ccode, completion_code_vals));
 		return -1;
 	}
+	IPMI_DEBUG(" ");
 	if (verbose > 2)
 		printbuf(rsp->data, rsp->data_len, "sel_info");
 
@@ -2272,6 +2279,8 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 		lprintf(LOG_ERR, "SEL has no entries");
 		return 0;
 	}
+
+	IPMI_DEBUG(" ");
 
 	memset(&req, 0, sizeof(req));
 	req.msg.netfn = IPMI_NETFN_STORAGE;
@@ -2287,6 +2296,8 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 		       val2str(rsp->ccode, completion_code_vals));
 		return -1;
 	}
+
+	IPMI_DEBUG("count %d",count);
 
 	if (count < 0) {
 		/** Show only the most recent 'count' records. */
@@ -2310,6 +2321,7 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 
 		for(i = 0; i < entries + count; i++) {
 			next_id = ipmi_sel_get_std_entry(intf, next_id, &evt);
+			IPMI_DEBUG("[%d] next_id [%d]", i, next_id);
 			if (next_id == 0) {
 				/*
 				 * usually next_id of zero means end but
@@ -2324,15 +2336,18 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 		}
 	}
 
+
 	if (savefile) {
 		fp = ipmi_open_file_write(savefile);
 	}
+	IPMI_DEBUG("next_id [%d]", next_id);
 
 	while (next_id != 0xffff) {
 		curr_id = next_id;
 		lprintf(LOG_DEBUG, "SEL Next ID: %04x", curr_id);
 
 		next_id = ipmi_sel_get_std_entry(intf, curr_id, &evt);
+		IPMI_DEBUG("[%d] next_id [%d]", curr_id,next_id);
 		if (next_id == 0) {
 			/*
 			 * usually next_id of zero means end but
@@ -2344,10 +2359,14 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 				break;
 		}
 
-		if (verbose)
+		IPMI_DEBUG(" ");
+		if (verbose){
 			ipmi_sel_print_std_entry_verbose(intf, &evt);
-		else
+		} else {
 			ipmi_sel_print_std_entry(intf, &evt);
+		}
+
+		IPMI_DEBUG(" ");
 
 		if (fp) {
 			if (binary)

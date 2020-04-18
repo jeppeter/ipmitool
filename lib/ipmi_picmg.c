@@ -645,7 +645,7 @@ ipmi_picmg_getaddr(struct ipmi_intf * intf, int argc, char ** argv)
 
 	rsp = intf->sendrecv(intf, &req);
 	if (!rsp) {
-		lprintf(LOG_ERR, "Error. No valid response received.");
+		IPMI_ERR("Error. No valid response received.");
 		return (-1);
 	} else if (rsp->ccode) {
 		lprintf(LOG_ERR, "Error getting address information CC: 0x%02x",
@@ -810,7 +810,7 @@ ipmi_picmg_fru_activation_policy_get(struct ipmi_intf * intf, char ** argv)
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 	if (rsp->ccode) {
@@ -862,7 +862,7 @@ ipmi_picmg_fru_activation_policy_set(struct ipmi_intf * intf, char ** argv)
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -902,7 +902,7 @@ ipmi_picmg_portstate_get(struct ipmi_intf * intf, int32_t interface,
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1044,7 +1044,7 @@ ipmi_picmg_portstate_set(struct ipmi_intf * intf, int32_t interface,
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1095,7 +1095,7 @@ ipmi_picmg_amc_portstate_get(struct ipmi_intf * intf, int32_t device,
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1237,7 +1237,7 @@ ipmi_picmg_amc_portstate_set(struct ipmi_intf * intf, uint8_t channel,
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1274,7 +1274,7 @@ ipmi_picmg_get_led_properties(struct ipmi_intf * intf, char ** argv)
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1315,7 +1315,7 @@ ipmi_picmg_get_led_capabilities(struct ipmi_intf * intf, char ** argv)
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1364,7 +1364,7 @@ ipmi_picmg_get_led_state(struct ipmi_intf * intf, char ** argv)
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1494,7 +1494,7 @@ ipmi_picmg_set_led_state(struct ipmi_intf * intf, char ** argv)
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1537,7 +1537,7 @@ ipmi_picmg_get_power_level(struct ipmi_intf * intf, char ** argv)
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1596,7 +1596,7 @@ ipmi_picmg_set_power_level(struct ipmi_intf * intf, char ** argv)
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1695,7 +1695,7 @@ ipmi_picmg_fru_control(struct ipmi_intf * intf, char ** argv)
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1743,7 +1743,7 @@ ipmi_picmg_clk_get(struct ipmi_intf * intf, uint8_t clk_id, int8_t clk_res,
 	rsp = intf->sendrecv(intf, &req);
 
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 
@@ -1863,7 +1863,7 @@ ipmi_picmg_clk_set(struct ipmi_intf * intf, int argc, char ** argv)
 
 	rsp = intf->sendrecv(intf, &req);
 	if (!rsp) {
-		lprintf(LOG_ERR, "No valid response received.");
+		IPMI_ERR("No valid response received.");
 		return -1;
 	}
 

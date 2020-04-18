@@ -2955,6 +2955,7 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 
 	struct ipm_devid_rsp *devid;
 
+	IPMI_ERR("ipmi_sdr_start [%d]", use_builtin);
 	itr = malloc(sizeof (struct ipmi_sdr_iterator));
 	if (!itr) {
 		lprintf(LOG_ERR, "ipmitool: malloc failure");
@@ -2992,7 +2993,7 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 				lprintf(LOG_DEBUG, "Using Device SDRs\n");
 				use_built_in = 1;
 			} else {
-				lprintf(LOG_ERR, "Error obtaining SDR info");
+				IPMI_ERR("Error obtaining SDR info");
 				free(itr);
 				itr = NULL;
 				return NULL;
@@ -3012,13 +3013,13 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 
 		rsp = intf->sendrecv(intf, &req);
 		if (!rsp) {
-			lprintf(LOG_ERR, "Error obtaining SDR info");
+			IPMI_ERR("Error obtaining SDR info");
 			free(itr);
 			itr = NULL;
 			return NULL;
 		}
 		if (rsp->ccode) {
-			lprintf(LOG_ERR, "Error obtaining SDR info: %s",
+			IPMI_ERR("Error obtaining SDR info: %s",
 				val2str(rsp->ccode, completion_code_vals));
 			free(itr);
 			itr = NULL;
