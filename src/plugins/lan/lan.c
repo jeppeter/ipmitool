@@ -278,7 +278,6 @@ ipmi_lan_recv_packet(struct ipmi_intf * intf)
 	 * response is read before the connection refused is returned)
 	 */
 	ret = recv(intf->fd, &rsp.data, IPMI_BUF_SIZE, 0);
-
 	if (ret < 0) {
 		FD_ZERO(&read_set);
 		FD_SET(intf->fd, &read_set);
@@ -478,7 +477,7 @@ ipmi_lan_poll_recv(struct ipmi_intf * intf)
 			/* handled by rest of function */
 			break;
 		default:
-			lprintf(LOG_DEBUG, "Invalid RMCP class: %x",
+			IPMI_ERR("Invalid RMCP class: %x",
 				rmcp_rsp.class);
 			rsp = ipmi_lan_recv_packet(intf);
 			continue;
