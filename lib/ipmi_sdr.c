@@ -954,7 +954,6 @@ ipmi_sdr_get_header(struct ipmi_intf *intf, struct ipmi_sdr_iterator *itr)
 	sdr_rq.length = 5;	/* only get the header */
 
 	memset(&req, 0, sizeof (req));
-	IPMI_ERR("GET SDR");
 	if (itr->use_built_in == 0) {
 		req.msg.netfn = IPMI_NETFN_STORAGE;
 		req.msg.cmd = GET_SDR;
@@ -2958,7 +2957,6 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 
 	struct ipm_devid_rsp *devid;
 
-	IPMI_ERR("ipmi_sdr_start [%d]", use_builtin);
 	itr = malloc(sizeof (struct ipmi_sdr_iterator));
 	if (!itr) {
 		lprintf(LOG_ERR, "ipmitool: malloc failure");
@@ -3014,10 +3012,7 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 		req.msg.netfn = IPMI_NETFN_STORAGE;
 		req.msg.cmd = GET_SDR_REPO_INFO;
 
-		IPMI_ERR("before req");
-
 		rsp = intf->sendrecv(intf, &req);
-		IPMI_ERR("after req [%p]", rsp);
 		if (!rsp) {
 			IPMI_ERR("Error obtaining SDR info");
 			free(itr);
@@ -3140,7 +3135,6 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 	req.msg.data_len = sizeof (sdr_rq);
 
 	/* check if max length is null */
-	IPMI_ERR("sdr_max_read_len [%d]", sdr_max_read_len);
 	if ( sdr_max_read_len == 0 ) {
 		/* get maximum response size */
 		sdr_max_read_len = ipmi_intf_get_max_response_data_size(intf) - 2;
@@ -3156,7 +3150,6 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 	 * transport buffer size.  (completion code 0xca)
 	 */
 	while (i < len) {
-		IPMI_ERR("i[%d] < len[%d]", i, len);
 		sdr_rq.length = (len - i < sdr_max_read_len) ?
 		    len - i : sdr_max_read_len;
 		sdr_rq.offset = i + 5;	/* 5 header bytes */
@@ -3215,7 +3208,6 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 		memcpy(data + i, rsp->data + 2, sdr_rq.length);
 		i += sdr_max_read_len;
 	}
-	IPMI_ERR(" ");
 	return data;
 }
 
@@ -3391,7 +3383,6 @@ ipmi_sdr_find_sdr_bynumtype(struct ipmi_intf *intf, uint16_t gen_id, uint8_t num
 	}
 
 	/* now keep looking */
-	IPMI_ERR("ipmi_sdr_get_next_header");
 	while ((header = ipmi_sdr_get_next_header(intf, sdr_list_itr))) {
 		uint8_t *rec;
 		struct sdr_record_list *sdrr;
@@ -3405,7 +3396,6 @@ ipmi_sdr_find_sdr_bynumtype(struct ipmi_intf *intf, uint16_t gen_id, uint8_t num
 		sdrr->id = header->id;
 		sdrr->type = header->type;
 
-		IPMI_ERR("ipmi_sdr_get_record");
 		rec = ipmi_sdr_get_record(intf, header, sdr_list_itr);
 		if (!rec) {
 			if (sdrr) {
@@ -3418,7 +3408,6 @@ ipmi_sdr_find_sdr_bynumtype(struct ipmi_intf *intf, uint16_t gen_id, uint8_t num
 		switch (header->type) {
 		case SDR_RECORD_TYPE_FULL_SENSOR:
 		case SDR_RECORD_TYPE_COMPACT_SENSOR:
-			IPMI_ERR("size of sdr_record_common_sensor [%d]", sizeof(struct sdr_record_common_sensor));
 			sdrr->record.common =
 			    (struct sdr_record_common_sensor *) rec;
 			IPMI_ERR("num [%d] gen_id [%d] type [%d]", num,gen_id & 0xff,type);
