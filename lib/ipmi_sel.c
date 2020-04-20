@@ -2321,7 +2321,7 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 
 		for(i = 0; i < entries + count; i++) {
 			next_id = ipmi_sel_get_std_entry(intf, next_id, &evt);
-			IPMI_DEBUG("[%d] next_id [%d]", i, next_id);
+			IPMI_ERR("[%d] next_id [%d]", i, next_id);
 			if (next_id == 0) {
 				/*
 				 * usually next_id of zero means end but
@@ -2340,7 +2340,7 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 	if (savefile) {
 		fp = ipmi_open_file_write(savefile);
 	}
-	IPMI_DEBUG("next_id [%d]", next_id);
+	IPMI_ERR("next_id [%d]", next_id);
 
 	while (next_id != 0xffff) {
 		curr_id = next_id;

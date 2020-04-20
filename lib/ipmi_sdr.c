@@ -1026,6 +1026,7 @@ ipmi_sdr_get_header(struct ipmi_intf *intf, struct ipmi_sdr_iterator *itr)
 		sdr_rs.id = itr->next;
 	}
 
+	IPMI_ERR(" ");
 	lprintf(LOG_DEBUG, "SDR record type : 0x%02x", sdr_rs.type);
 	lprintf(LOG_DEBUG, "SDR record next : 0x%04x", sdr_rs.next);
 	lprintf(LOG_DEBUG, "SDR record bytes: %d", sdr_rs.length);
@@ -3150,6 +3151,7 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 	 * transport buffer size.  (completion code 0xca)
 	 */
 	while (i < len) {
+		IPMI_ERR("sdr_max_read_len [%d] len[%d] i[%d]", sdr_max_read_len, len,i);
 		sdr_rq.length = (len - i < sdr_max_read_len) ?
 		    len - i : sdr_max_read_len;
 		sdr_rq.offset = i + 5;	/* 5 header bytes */
@@ -3208,6 +3210,7 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 		memcpy(data + i, rsp->data + 2, sdr_rq.length);
 		i += sdr_max_read_len;
 	}
+	IPMI_ERR("data [%d]",len);
 	return data;
 }
 
@@ -3408,6 +3411,7 @@ ipmi_sdr_find_sdr_bynumtype(struct ipmi_intf *intf, uint16_t gen_id, uint8_t num
 		switch (header->type) {
 		case SDR_RECORD_TYPE_FULL_SENSOR:
 		case SDR_RECORD_TYPE_COMPACT_SENSOR:
+			IPMI_BUFFER_ERR(rec,header->length,"type [%d] length[%d]", header->type, header->length);
 			sdrr->record.common =
 			    (struct sdr_record_common_sensor *) rec;
 			IPMI_ERR("num [%d] gen_id [%d] type [%d]", num,gen_id & 0xff,type);
