@@ -1302,6 +1302,7 @@ ipmi_get_event_desc(struct ipmi_intf * intf, struct sel_event_record * rec, char
 		return;
 	*desc = NULL;
 
+	IPMI_ERR("rec->sel_type.standard_type.event_type [0x%x]",rec->sel_type.standard_type.event_type);
 	if ((rec->sel_type.standard_type.event_type >= 0x70) && (rec->sel_type.standard_type.event_type < 0x7F)) {
 		*desc = ipmi_get_oem_desc(intf, rec);
 		return;

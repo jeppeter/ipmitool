@@ -1026,7 +1026,6 @@ ipmi_sdr_get_header(struct ipmi_intf *intf, struct ipmi_sdr_iterator *itr)
 		sdr_rs.id = itr->next;
 	}
 
-	IPMI_ERR(" ");
 	lprintf(LOG_DEBUG, "SDR record type : 0x%02x", sdr_rs.type);
 	lprintf(LOG_DEBUG, "SDR record next : 0x%04x", sdr_rs.next);
 	lprintf(LOG_DEBUG, "SDR record bytes: %d", sdr_rs.length);
@@ -3151,7 +3150,7 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 	 * transport buffer size.  (completion code 0xca)
 	 */
 	while (i < len) {
-		IPMI_ERR("sdr_max_read_len [%d] len[%d] i[%d]", sdr_max_read_len, len,i);
+		//IPMI_ERR("sdr_max_read_len [%d] len[%d] i[%d]", sdr_max_read_len, len,i);
 		sdr_rq.length = (len - i < sdr_max_read_len) ?
 		    len - i : sdr_max_read_len;
 		sdr_rq.offset = i + 5;	/* 5 header bytes */
@@ -3160,6 +3159,7 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 			sdr_rq.length, sdr_rq.offset);
 
 		rsp = intf->sendrecv(intf, &req);
+		//IPMI_ERR("rsp [%p]", rsp);
 		if (!rsp) {
 		    sdr_max_read_len = sdr_rq.length - 1;
 		    if (sdr_max_read_len > 0) {
@@ -3206,7 +3206,7 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 			return NULL;
 		}
 
-		IPMI_BUFFER_ERR(rsp->data + 2, sdr_rq.length, "receive data");
+		//IPMI_BUFFER_ERR(rsp->data + 2, sdr_rq.length, "receive data");
 		memcpy(data + i, rsp->data + 2, sdr_rq.length);
 		i += sdr_max_read_len;
 	}
