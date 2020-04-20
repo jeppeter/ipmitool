@@ -2760,11 +2760,13 @@ ipmi_sel_set_time(struct ipmi_intf * intf, const char * time_string)
 	struct ipmi_rq req;
 	struct tm tm = {0};
 	time_t t;
+	unsigned char data[4];
 	const char *time_format = "%x %X"; /* Use locale-defined format */
 
 	memset(&req, 0, sizeof(req));
 	req.msg.netfn    = IPMI_NETFN_STORAGE;
 	req.msg.cmd      = IPMI_SET_SEL_TIME;
+	req.msg.data     = data;
 
 	/* See if user requested set to current client system time */
 	if (strncasecmp(time_string, "now", 3) == 0) {
