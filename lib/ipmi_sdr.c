@@ -2817,12 +2817,10 @@ ipmi_sdr_print_sdr(struct ipmi_intf *intf, uint8_t type)
 			rc = -1;
 	}
 
-	IPMI_ERR("ipmi_sdr_get_header");
 	while ((header = ipmi_sdr_get_next_header(intf, sdr_list_itr))) {
 		uint8_t *rec;
 		struct sdr_record_list *sdrr;
 
-		IPMI_ERR("ipmi_sdr_get_record");
 		rec = ipmi_sdr_get_record(intf, header, sdr_list_itr);
 		if (!rec) {
 			lprintf(LOG_ERR, "ipmitool: ipmi_sdr_get_record() failed");
@@ -2994,7 +2992,7 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 				lprintf(LOG_DEBUG, "Using Device SDRs\n");
 				use_built_in = 1;
 			} else {
-				IPMI_ERR("Error obtaining SDR info");
+				lprintf(LOG_ERR,"Error obtaining SDR info");
 				free(itr);
 				itr = NULL;
 				return NULL;
@@ -3014,13 +3012,13 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 
 		rsp = intf->sendrecv(intf, &req);
 		if (!rsp) {
-			IPMI_ERR("Error obtaining SDR info");
+			lprintf(LOG_ERR,"Error obtaining SDR info");
 			free(itr);
 			itr = NULL;
 			return NULL;
 		}
 		if (rsp->ccode) {
-			IPMI_ERR("Error obtaining SDR info: %s",
+			lprintf(LOG_ERR,"Error obtaining SDR info: %s",
 				val2str(rsp->ccode, completion_code_vals));
 			free(itr);
 			itr = NULL;
@@ -3059,7 +3057,6 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 	} else {
 		struct sdr_device_info_rs sdr_info;
 		/* get device sdr info */
-		IPMI_ERR(" ");
 		memset(&req, 0, sizeof (req));
 		req.msg.netfn = IPMI_NETFN_SE;
 		req.msg.cmd = GET_DEVICE_SDR_INFO;
@@ -3150,7 +3147,6 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 	 * transport buffer size.  (completion code 0xca)
 	 */
 	while (i < len) {
-		//IPMI_ERR("sdr_max_read_len [%d] len[%d] i[%d]", sdr_max_read_len, len,i);
 		sdr_rq.length = (len - i < sdr_max_read_len) ?
 		    len - i : sdr_max_read_len;
 		sdr_rq.offset = i + 5;	/* 5 header bytes */
@@ -3159,18 +3155,15 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 			sdr_rq.length, sdr_rq.offset);
 
 		rsp = intf->sendrecv(intf, &req);
-		//IPMI_ERR("rsp [%p]", rsp);
 		if (!rsp) {
 		    sdr_max_read_len = sdr_rq.length - 1;
 		    if (sdr_max_read_len > 0) {
 			/* no response may happen if requests are bridged
 			   and too many bytes are requested */
-		    IPMI_ERR(" ");
 			continue;
 		    } else {
 			free(data);
 			data = NULL;
-			IPMI_ERR(" ");
 			return NULL;
 		    }
 		}
@@ -3191,7 +3184,6 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
                                       &(itr->reservation)) < 0) {
 				free(data);
 				data = NULL;
-				IPMI_ERR(" ");
 				return NULL;
 			}
 			sdr_rq.reserve_id = itr->reservation;
@@ -3202,15 +3194,12 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 		if (rsp->ccode || rsp->data_len == 0) {
 			free(data);
 			data = NULL;
-			IPMI_ERR(" ");
 			return NULL;
 		}
 
-		//IPMI_BUFFER_ERR(rsp->data + 2, sdr_rq.length, "receive data");
 		memcpy(data + i, rsp->data + 2, sdr_rq.length);
 		i += sdr_max_read_len;
 	}
-	IPMI_ERR("data [%d]",len);
 	return data;
 }
 
@@ -3519,7 +3508,6 @@ ipmi_sdr_find_sdr_bysensortype(struct ipmi_intf *intf, uint8_t type)
 	}
 
 	/* now keep looking */
-	IPMI_ERR("ipmi_sdr_get_next_header");
 	while ((header = ipmi_sdr_get_next_header(intf, sdr_list_itr))) {
 		uint8_t *rec;
 		struct sdr_record_list *sdrr;
@@ -3533,7 +3521,6 @@ ipmi_sdr_find_sdr_bysensortype(struct ipmi_intf *intf, uint8_t type)
 		sdrr->id = header->id;
 		sdrr->type = header->type;
 
-		IPMI_ERR("ipmi_sdr_get_record");
 		rec = ipmi_sdr_get_record(intf, header, sdr_list_itr);
 		if (!rec) {
 			if (sdrr) {
@@ -3675,7 +3662,6 @@ ipmi_sdr_find_sdr_byentity(struct ipmi_intf *intf, struct entity_id *entity)
 	}
 
 	/* now keep looking */
-	IPMI_ERR("ipmi_sdr_get_next_header");
 	while ((header = ipmi_sdr_get_next_header(intf, sdr_list_itr))) {
 		uint8_t *rec;
 		struct sdr_record_list *sdrr;
@@ -3689,7 +3675,6 @@ ipmi_sdr_find_sdr_byentity(struct ipmi_intf *intf, struct entity_id *entity)
 		sdrr->id = header->id;
 		sdrr->type = header->type;
 
-		IPMI_ERR("ipmi_sdr_get_record");
 		rec = ipmi_sdr_get_record(intf, header, sdr_list_itr);
 		if (!rec) {
 			if (sdrr) {
@@ -3813,7 +3798,6 @@ ipmi_sdr_find_sdr_bytype(struct ipmi_intf *intf, uint8_t type)
 			__sdr_list_add(head, e);
 
 	/* now keep looking */
-	IPMI_ERR("ipmi_sdr_get_next_header");
 	while ((header = ipmi_sdr_get_next_header(intf, sdr_list_itr))) {
 		uint8_t *rec;
 		struct sdr_record_list *sdrr;
@@ -3827,7 +3811,6 @@ ipmi_sdr_find_sdr_bytype(struct ipmi_intf *intf, uint8_t type)
 		sdrr->id = header->id;
 		sdrr->type = header->type;
 
-		IPMI_ERR("ipmi_sdr_get_record");
 		rec = ipmi_sdr_get_record(intf, header, sdr_list_itr);
 		if (!rec) {
 			if (sdrr) {
@@ -3960,7 +3943,6 @@ ipmi_sdr_find_sdr_byid(struct ipmi_intf *intf, char *id)
 	}
 
 	/* now keep looking */
-	IPMI_ERR("ipmi_sdr_get_next_header");
 	while ((header = ipmi_sdr_get_next_header(intf, sdr_list_itr))) {
 		uint8_t *rec;
 		struct sdr_record_list *sdrr;
@@ -3974,7 +3956,6 @@ ipmi_sdr_find_sdr_byid(struct ipmi_intf *intf, char *id)
 		sdrr->id = header->id;
 		sdrr->type = header->type;
 
-		IPMI_ERR("ipmi_sdr_get_record");
 		rec = ipmi_sdr_get_record(intf, header, sdr_list_itr);
 		if (!rec) {
 			if (sdrr) {
@@ -4251,7 +4232,6 @@ ipmi_sdr_list_cache(struct ipmi_intf *intf)
 		}
 	}
 
-	IPMI_ERR("ipmi_sdr_get_next_header");
 	while ((header = ipmi_sdr_get_next_header(intf, sdr_list_itr))) {
 		uint8_t *rec;
 		struct sdr_record_list *sdrr;
@@ -4265,7 +4245,6 @@ ipmi_sdr_list_cache(struct ipmi_intf *intf)
 		sdrr->id = header->id;
 		sdrr->type = header->type;
 
-		IPMI_ERR("ipmi_sdr_get_record");
 		rec = ipmi_sdr_get_record(intf, header, sdr_list_itr);
 		if (!rec) {
 			if (sdrr) {
@@ -4500,7 +4479,6 @@ ipmi_sdr_dump_bin(struct ipmi_intf *intf, const char *ofile)
 	printf("Dumping Sensor Data Repository to '%s'\n", ofile);
 
 	/* generate list of records */
-	IPMI_ERR("ipmi_sdr_get_next_header");
 	while ((header = ipmi_sdr_get_next_header(intf, itr))) {
 		sdrr = malloc(sizeof(struct sdr_record_list));
 		if (!sdrr) {
@@ -4516,7 +4494,6 @@ ipmi_sdr_dump_bin(struct ipmi_intf *intf, const char *ofile)
 		sdrr->version = header->version;
 		sdrr->type = header->type;
 		sdrr->length = header->length;
-		IPMI_ERR("ipmi_sdr_get_record");
 		sdrr->raw = ipmi_sdr_get_record(intf, header, itr);
 
 		if (!sdrr->raw) {

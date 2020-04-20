@@ -1302,7 +1302,6 @@ ipmi_get_event_desc(struct ipmi_intf * intf, struct sel_event_record * rec, char
 		return;
 	*desc = NULL;
 
-	IPMI_ERR("rec->sel_type.standard_type.event_type [0x%x]",rec->sel_type.standard_type.event_type);
 	if ((rec->sel_type.standard_type.event_type >= 0x70) && (rec->sel_type.standard_type.event_type < 0x7F)) {
 		*desc = ipmi_get_oem_desc(intf, rec);
 		return;
@@ -1698,7 +1697,6 @@ ipmi_sel_get_std_entry(struct ipmi_intf * intf, uint16_t id,
 	/* save response into SEL event structure */
 	evt->record_id = (rsp->data[3] << 8) | rsp->data[2];
 	evt->record_type = rsp->data[4];
-	IPMI_BUFFER_ERR(rsp->data, rsp->data_len, "rsp data");
 	if (evt->record_type < 0xc0)
 	{
     		evt->sel_type.standard_type.timestamp = (rsp->data[8] << 24) |	(rsp->data[7] << 16) |
@@ -2322,7 +2320,6 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 
 		for(i = 0; i < entries + count; i++) {
 			next_id = ipmi_sel_get_std_entry(intf, next_id, &evt);
-			IPMI_ERR("[%d] next_id [%d]", i, next_id);
 			if (next_id == 0) {
 				/*
 				 * usually next_id of zero means end but
@@ -2341,7 +2338,6 @@ __ipmi_sel_savelist_entries(struct ipmi_intf * intf, int count, const char * sav
 	if (savefile) {
 		fp = ipmi_open_file_write(savefile);
 	}
-	IPMI_ERR("next_id [%d]", next_id);
 
 	while (next_id != 0xffff) {
 		curr_id = next_id;
