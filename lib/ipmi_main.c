@@ -852,7 +852,6 @@ ipmi_main(int argc, char ** argv,
 		goto out_free;
 	}
 
-	IPMI_DEBUG(" ");
 	/* set session variables */
 	if (hostname)
 		ipmi_intf_session_set_hostname(ipmi_main_intf, hostname);
@@ -876,7 +875,6 @@ ipmi_main(int argc, char ** argv,
 	if (timeout > 0)
 		ipmi_intf_session_set_timeout(ipmi_main_intf, timeout);
 
-	IPMI_DEBUG(" ");
 	ipmi_intf_session_set_lookupbit(ipmi_main_intf, lookupbit);
 	ipmi_intf_session_set_sol_escape_char(ipmi_main_intf, sol_escape_char);
 #ifdef IPMI_INTF_LANPLUS
@@ -889,7 +887,6 @@ ipmi_main(int argc, char ** argv,
 	ipmi_main_intf->devfile = devfile;
 
 	ipmi_main_intf->ai_family = ai_family;
-	IPMI_DEBUG(" ");
 	/* Open the interface with the specified or default IPMB address */
 	ipmi_main_intf->my_addr = arg_addr ? arg_addr : IPMI_BMC_SLAVE_ADDR;
 	if (ipmi_main_intf->open) {

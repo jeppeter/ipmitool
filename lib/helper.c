@@ -209,7 +209,7 @@ ipmi_parse_hex(const char *str, uint8_t *out, int size)
 	return len;
 }
 
-void printbuf(const uint8_t * buf, int len, const char * desc)
+void printbuf_inner(const char* file,int lineno,const uint8_t * buf, int len, const char * desc)
 {
 	int i;
 
@@ -219,7 +219,7 @@ void printbuf(const uint8_t * buf, int len, const char * desc)
 	if (verbose < 1)
 		return;
 
-	fprintf(stderr, "%s (%d bytes)\n", desc, len);
+	fprintf(stderr, "[%s:%d] %s (%d bytes)\n",file,lineno, desc, len);
 	for (i=0; i<len; i++) {
 		if (((i%16) == 0) && (i != 0))
 			fprintf(stderr, "\n");

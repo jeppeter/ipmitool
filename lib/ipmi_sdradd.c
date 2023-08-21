@@ -211,6 +211,7 @@ ipmi_sdr_repo_clear(struct ipmi_intf *intf)
         val2str(rsp->ccode, completion_code_vals));
       return -1;
     }
+    IPMI_BUFFER_ERR(rsp->data,rsp->data_len,"IPMI_NETFN_STORAGE 0x27");
     if ((rsp->data[0] & 1) == 1) {
       printf("SDRR successfully erased\n");
       return 0;

@@ -56,8 +56,10 @@ void log_init(const char * name, int isdaemon, int verbose);
 void log_halt(void);
 void log_level_set(int level);
 int log_level_get(void);
-void lprintf(int level, const char * format, ...);
+void lprintf_inner(int level,const char* file,int lineno, const char * format, ...);
 void lperror(int level, const char * format, ...);
+
+#define lprintf(level,...) do{lprintf_inner(level,__FILE__,__LINE__,__VA_ARGS__);}while(0)
 
 void ipmi_log(int level,const char* file, int lineno, const char* fmt,...);
 void ipmi_buffer_log(int level, const char* file, int lineno, void* pbuf, int bufsize,const char* fmt,...);

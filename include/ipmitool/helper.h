@@ -112,7 +112,9 @@ const char * buf2str(const uint8_t *buf, int len);
 int str2mac(const char *arg, uint8_t *buf);
 const char * mac2str(const uint8_t *buf);
 int ipmi_parse_hex(const char *str, uint8_t *out, int size);
-void printbuf(const uint8_t * buf, int len, const char * desc);
+void printbuf_inner(const char* file,int lineno,const uint8_t * buf, int len, const char * desc);
+
+#define printbuf(buf,len,desc) do{printbuf_inner(__FILE__,__LINE__,buf,len,desc);}while(0)
 uint8_t ipmi_csum(uint8_t * d, int s);
 FILE * ipmi_open_file(const char * file, int rw);
 void ipmi_start_daemon(struct ipmi_intf *intf);

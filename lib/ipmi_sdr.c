@@ -1000,6 +1000,7 @@ ipmi_sdr_get_header(struct ipmi_intf *intf, struct ipmi_sdr_iterator *itr)
 
 	if (!rsp)
 		return NULL;
+	IPMI_BUFFER_ERR(rsp->data,rsp->data_len,"%s %s received", itr->use_built_in == 0 ? "IPMI_NETFN_STORAGE" : "IPMI_NETFN_SE", itr->use_built_in == 0 ? "GET_SDR" : "GET_DEVICE_SDR");
 
 	lprintf(LOG_DEBUG, "SDR record ID   : 0x%04x", itr->next);
 
@@ -2932,6 +2933,7 @@ ipmi_sdr_get_reservation(struct ipmi_intf *intf, int use_builtin,
 		return -1;
 	if (rsp->ccode)
 		return -1;
+	IPMI_BUFFER_ERR(rsp->data,rsp->data_len,"%s GET_SDR_RESERVE_REPO received", use_builtin  == 0? "IPMI_NETFN_STORAGE" : "IPMI_NETFN_SE");
 
 	*reserve_id = ((struct sdr_reserve_repo_rs *) &(rsp->data))->reserve_id;
 	lprintf(LOG_DEBUG, "SDR reservation ID %04x", *reserve_id);
@@ -2982,6 +2984,7 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 		itr = NULL;
 		return NULL;
 	}
+	IPMI_BUFFER_ERR(rsp->data,rsp->data_len,"received BMC_GET_DEVICE_ID data");
 	devid = (struct ipm_devid_rsp *) rsp->data;
 
    sdriana =  (long)IPM_DEV_MANUFACTURER_ID(devid->manufacturer_id);
@@ -3024,6 +3027,7 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 			itr = NULL;
 			return NULL;
 		}
+		IPMI_BUFFER_ERR(rsp->data,rsp->data_len,"IPMI_NETFN_STORAGE GET_SDR_REPO_INFO received");
 
 		memcpy(&sdr_info, rsp->data, sizeof (sdr_info));
 		/* IPMIv1.0 == 0x01
@@ -3068,6 +3072,7 @@ ipmi_sdr_start(struct ipmi_intf *intf, int use_builtin)
 			itr = NULL;
 			return NULL;
 		}
+		IPMI_BUFFER_ERR(rsp->data,rsp->data_len,"IPMI_NETFN_SE GET_DEVICE_SDR_INFO");
 		memcpy(&sdr_info, rsp->data, sizeof (sdr_info));
 
 		itr->total = sdr_info.count;

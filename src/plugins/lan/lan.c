@@ -239,8 +239,8 @@ get_random(void *data, int len)
 static int
 ipmi_lan_send_packet(struct ipmi_intf * intf, uint8_t * data, int data_len)
 {
-	if (verbose > 2)
-		printbuf(data, data_len, "send_packet");
+	//if (verbose > 2)
+	//	printbuf(data, data_len, "send_packet");
 	IPMI_BUFFER_DEBUG(data, data_len, "send_packet");
 	return send(intf->fd, data, data_len, 0);
 }
@@ -305,8 +305,8 @@ ipmi_lan_recv_packet(struct ipmi_intf * intf)
 
 	IPMI_BUFFER_DEBUG(rsp.data, rsp.data_len, "recv data");
 
-	if (verbose > 2)
-		printbuf(rsp.data, rsp.data_len, "recv_packet");
+	//if (verbose > 2)
+	//	printbuf(rsp.data, rsp.data_len, "recv_packet");
 
 	return &rsp;
 }
@@ -348,7 +348,7 @@ ipmi_handle_pong(struct ipmi_rs *rsp)
 
 	pong = (struct rmcp_pong *)rsp->data;
 
-	lprintf(LOG_DEBUG,
+	/*lprintf(LOG_DEBUG,
 		"Received IPMI/RMCP response packet: \n"
 		"  IPMI%s Supported\n"
 		"  ASF Version %s\n"
@@ -359,7 +359,7 @@ ipmi_handle_pong(struct ipmi_rs *rsp)
 		(pong->sup_entities & 0x01) ? "1.0" : "unknown",
 		(pong->rmcp.ver == 6) ? "1.0" : "unknown",
 		pong->rmcp.seq,
-		ntohl(pong->iana));
+		ntohl(pong->iana));*/
 
 	return (pong->sup_entities & 0x80) ? 1 : 0;
 }
@@ -408,7 +408,7 @@ ipmi_lan_ping(struct ipmi_intf * intf)
 	memcpy(data, &rmcp_ping, sizeof(rmcp_ping));
 	memcpy(data+sizeof(rmcp_ping), &asf_ping, sizeof(asf_ping));
 
-	lprintf(LOG_DEBUG, "Sending IPMI/RMCP presence ping packet");
+	//lprintf(LOG_DEBUG, "Sending IPMI/RMCP presence ping packet");
 
 	rv = ipmi_lan_send_packet(intf, data, len);
 
@@ -465,7 +465,7 @@ ipmi_lan_poll_recv(struct ipmi_intf * intf)
 
 		/* parse response headers */
 		memcpy(&rmcp_rsp, rsp->data, 4);
-		IPMI_BUFFER_DEBUG(&rmcp_rsp, sizeof(rmcp_rsp), "rmcp header class [0x%x]", rmcp_rsp.class);
+		//IPMI_BUFFER_DEBUG(&rmcp_rsp, sizeof(rmcp_rsp), "rmcp header class [0x%x]", rmcp_rsp.class);
 
 		switch (rmcp_rsp.class) {
 		case RMCP_CLASS_ASF:
@@ -564,39 +564,39 @@ ipmi_lan_poll_recv(struct ipmi_intf * intf)
 			rsp->payload.ipmi_response.cmd     = rsp->data[x++];
 			rsp->ccode          = rsp->data[x++];
 			
-			if (verbose > 2)
-				printbuf(rsp->data, rsp->data_len, "ipmi message header");
+			//if (verbose > 2)
+			//	printbuf(rsp->data, rsp->data_len, "ipmi message header");
 			
-			lprintf(LOG_DEBUG+1, "<< IPMI Response Session Header");
-			lprintf(LOG_DEBUG+1, "<<   Authtype   : %s",
-				val2str(rsp->session.authtype, ipmi_authtype_session_vals));
-			lprintf(LOG_DEBUG+1, "<<   Sequence   : 0x%08lx",
-				(long)rsp->session.seq);
-			lprintf(LOG_DEBUG+1, "<<   Session ID : 0x%08lx",
-				(long)rsp->session.id);
-			lprintf(LOG_DEBUG+1, "<< IPMI Response Message Header");
-			lprintf(LOG_DEBUG+1, "<<   Rq Addr    : %02x",
-				rsp->payload.ipmi_response.rq_addr);
-			lprintf(LOG_DEBUG+1, "<<   NetFn      : %02x",
-				rsp->payload.ipmi_response.netfn);
-			lprintf(LOG_DEBUG+1, "<<   Rq LUN     : %01x",
-				rsp->payload.ipmi_response.rq_lun);
-			lprintf(LOG_DEBUG+1, "<<   Rs Addr    : %02x",
-				rsp->payload.ipmi_response.rs_addr);
-			lprintf(LOG_DEBUG+1, "<<   Rq Seq     : %02x",
-				rsp->payload.ipmi_response.rq_seq);
-			lprintf(LOG_DEBUG+1, "<<   Rs Lun     : %01x",
-				rsp->payload.ipmi_response.rs_lun);
-			lprintf(LOG_DEBUG+1, "<<   Command    : %02x",
-				rsp->payload.ipmi_response.cmd);
-			lprintf(LOG_DEBUG+1, "<<   Compl Code : 0x%02x",
-				rsp->ccode);
+			//lprintf(LOG_DEBUG+1, "<< IPMI Response Session Header");
+			//lprintf(LOG_DEBUG+1, "<<   Authtype   : %s",
+			//	val2str(rsp->session.authtype, ipmi_authtype_session_vals));
+			//lprintf(LOG_DEBUG+1, "<<   Sequence   : 0x%08lx",
+			//	(long)rsp->session.seq);
+			//lprintf(LOG_DEBUG+1, "<<   Session ID : 0x%08lx",
+			//	(long)rsp->session.id);
+			//lprintf(LOG_DEBUG+1, "<< IPMI Response Message Header");
+			//lprintf(LOG_DEBUG+1, "<<   Rq Addr    : %02x",
+			//	rsp->payload.ipmi_response.rq_addr);
+			//lprintf(LOG_DEBUG+1, "<<   NetFn      : %02x",
+			//	rsp->payload.ipmi_response.netfn);
+			//lprintf(LOG_DEBUG+1, "<<   Rq LUN     : %01x",
+			//	rsp->payload.ipmi_response.rq_lun);
+			//lprintf(LOG_DEBUG+1, "<<   Rs Addr    : %02x",
+			//	rsp->payload.ipmi_response.rs_addr);
+			//lprintf(LOG_DEBUG+1, "<<   Rq Seq     : %02x",
+			//	rsp->payload.ipmi_response.rq_seq);
+			//lprintf(LOG_DEBUG+1, "<<   Rs Lun     : %01x",
+			//	rsp->payload.ipmi_response.rs_lun);
+			//lprintf(LOG_DEBUG+1, "<<   Command    : %02x",
+			//	rsp->payload.ipmi_response.cmd);
+			//lprintf(LOG_DEBUG+1, "<<   Compl Code : 0x%02x",
+			//	rsp->ccode);
 			
 			/* now see if we have outstanding entry in request list */
 			entry = ipmi_req_lookup_entry(rsp->payload.ipmi_response.rq_seq,
 						      rsp->payload.ipmi_response.cmd);
 			if (entry) {
-				lprintf(LOG_DEBUG+2, "IPMI Request Match found");
+				//lprintf(LOG_DEBUG+2, "IPMI Request Match found");
 				if ((intf->target_addr != our_address) && bridge_possible) {
 					if ((rsp->data_len) && (rsp->payload.ipmi_response.netfn == 7) &&
 					    (rsp->payload.ipmi_response.cmd != 0x34)) {
@@ -856,19 +856,19 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 	msg[len++] = req->msg.cmd;
 	//IPMI_BUFFER_DEBUG(msg, len, "rq_seq cmd");
 
-	lprintf(LOG_DEBUG+1, ">> IPMI Request Session Header (level %d)", entry->bridging_level);
-	lprintf(LOG_DEBUG+1, ">>   Authtype   : %s",
-	       val2str(s->authtype, ipmi_authtype_session_vals));
-	lprintf(LOG_DEBUG+1, ">>   Sequence   : 0x%08lx", (long)s->in_seq);
-	lprintf(LOG_DEBUG+1, ">>   Session ID : 0x%08lx", (long)s->session_id);
-	lprintf(LOG_DEBUG+1, ">> IPMI Request Message Header");
-	lprintf(LOG_DEBUG+1, ">>   Rs Addr    : %02x", intf->target_addr);
-	lprintf(LOG_DEBUG+1, ">>   NetFn      : %02x", req->msg.netfn);
-	lprintf(LOG_DEBUG+1, ">>   Rs LUN     : %01x", 0);
-	lprintf(LOG_DEBUG+1, ">>   Rq Addr    : %02x", IPMI_REMOTE_SWID);
-	lprintf(LOG_DEBUG+1, ">>   Rq Seq     : %02x", entry->rq_seq);
-	lprintf(LOG_DEBUG+1, ">>   Rq Lun     : %01x", 0);
-	lprintf(LOG_DEBUG+1, ">>   Command    : %02x", req->msg.cmd);
+	//lprintf(LOG_DEBUG+1, ">> IPMI Request Session Header (level %d)", entry->bridging_level);
+	//lprintf(LOG_DEBUG+1, ">>   Authtype   : %s",
+	//       val2str(s->authtype, ipmi_authtype_session_vals));
+	//lprintf(LOG_DEBUG+1, ">>   Sequence   : 0x%08lx", (long)s->in_seq);
+	//lprintf(LOG_DEBUG+1, ">>   Session ID : 0x%08lx", (long)s->session_id);
+	//lprintf(LOG_DEBUG+1, ">> IPMI Request Message Header");
+	//lprintf(LOG_DEBUG+1, ">>   Rs Addr    : %02x", intf->target_addr);
+	//lprintf(LOG_DEBUG+1, ">>   NetFn      : %02x", req->msg.netfn);
+	//lprintf(LOG_DEBUG+1, ">>   Rs LUN     : %01x", 0);
+	//lprintf(LOG_DEBUG+1, ">>   Rq Addr    : %02x", IPMI_REMOTE_SWID);
+	//lprintf(LOG_DEBUG+1, ">>   Rq Seq     : %02x", entry->rq_seq);
+	//lprintf(LOG_DEBUG+1, ">>   Rq Lun     : %01x", 0);
+	//lprintf(LOG_DEBUG+1, ">>   Command    : %02x", req->msg.cmd);
 
 	/* message data */
 	if (req->msg.data_len) {
@@ -935,8 +935,8 @@ ipmi_lan_send_cmd(struct ipmi_intf * intf, struct ipmi_rq * req)
 	int try = 0;
 	int isRetry = 0;
 
-	lprintf(LOG_DEBUG, "ipmi_lan_send_cmd:opened=[%d], open=[%d]",
-		intf->opened, intf->open);
+	//lprintf(LOG_DEBUG, "ipmi_lan_send_cmd:opened=[%d], open=[%d]",
+	//	intf->opened, intf->open);
 
 	if (!intf->opened && intf->open) {
 		if (intf->open(intf) < 0) {
@@ -1495,8 +1495,8 @@ ipmi_get_auth_capabilities_cmd(struct ipmi_intf * intf)
 		lprintf(LOG_INFO, "Get Auth Capabilities command failed");
 		return -1;
 	}
-	if (verbose > 2)
-		printbuf(rsp->data, rsp->data_len, "get_auth_capabilities");
+	//if (verbose > 2)
+	//	printbuf(rsp->data, rsp->data_len, "get_auth_capabilities");
 
 	if (rsp->ccode) {
 		lprintf(LOG_INFO, "Get Auth Capabilities command failed: %s",
@@ -1504,32 +1504,32 @@ ipmi_get_auth_capabilities_cmd(struct ipmi_intf * intf)
 		return -1;
 	}
 
-	lprintf(LOG_DEBUG, "Channel %02x Authentication Capabilities:",
-		rsp->data[0]);
-	lprintf(LOG_DEBUG, "  Privilege Level : %s",
-		val2str(req.msg.data[1], ipmi_privlvl_vals));
-	lprintf(LOG_DEBUG, "  Auth Types      : %s%s%s%s%s",
-		(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_NONE) ? "NONE " : "",
-		(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_MD2) ? "MD2 " : "",
-		(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_MD5) ? "MD5 " : "",
-		(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_PASSWORD) ? "PASSWORD " : "",
-		(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_OEM) ? "OEM " : "");
-	lprintf(LOG_DEBUG, "  Per-msg auth    : %sabled",
-		(rsp->data[2] & IPMI_AUTHSTATUS_PER_MSG_DISABLED) ?
-		"dis" : "en");
-	lprintf(LOG_DEBUG, "  User level auth : %sabled",
-		(rsp->data[2] & IPMI_AUTHSTATUS_PER_USER_DISABLED) ?
-		"dis" : "en");
-	lprintf(LOG_DEBUG, "  Non-null users  : %sabled",
-		(rsp->data[2] & IPMI_AUTHSTATUS_NONNULL_USERS_ENABLED) ?
-		"en" : "dis");
-	lprintf(LOG_DEBUG, "  Null users      : %sabled",
-		(rsp->data[2] & IPMI_AUTHSTATUS_NULL_USERS_ENABLED) ?
-		"en" : "dis");
-	lprintf(LOG_DEBUG, "  Anonymous login : %sabled",
-		(rsp->data[2] & IPMI_AUTHSTATUS_ANONYMOUS_USERS_ENABLED) ?
-		"en" : "dis");
-	lprintf(LOG_DEBUG, "");
+	//lprintf(LOG_DEBUG, "Channel %02x Authentication Capabilities:",
+	//	rsp->data[0]);
+	//lprintf(LOG_DEBUG, "  Privilege Level : %s",
+	//	val2str(req.msg.data[1], ipmi_privlvl_vals));
+	//lprintf(LOG_DEBUG, "  Auth Types      : %s%s%s%s%s",
+	//	(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_NONE) ? "NONE " : "",
+	//	(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_MD2) ? "MD2 " : "",
+	//	(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_MD5) ? "MD5 " : "",
+	//	(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_PASSWORD) ? "PASSWORD " : "",
+	//	(rsp->data[1] & 1<<IPMI_SESSION_AUTHTYPE_OEM) ? "OEM " : "");
+	//lprintf(LOG_DEBUG, "  Per-msg auth    : %sabled",
+	//	(rsp->data[2] & IPMI_AUTHSTATUS_PER_MSG_DISABLED) ?
+	//	"dis" : "en");
+	//lprintf(LOG_DEBUG, "  User level auth : %sabled",
+	//	(rsp->data[2] & IPMI_AUTHSTATUS_PER_USER_DISABLED) ?
+	//	"dis" : "en");
+	//lprintf(LOG_DEBUG, "  Non-null users  : %sabled",
+	//	(rsp->data[2] & IPMI_AUTHSTATUS_NONNULL_USERS_ENABLED) ?
+	//	"en" : "dis");
+	//lprintf(LOG_DEBUG, "  Null users      : %sabled",
+	//	(rsp->data[2] & IPMI_AUTHSTATUS_NULL_USERS_ENABLED) ?
+	//	"en" : "dis");
+	//lprintf(LOG_DEBUG, "  Anonymous login : %sabled",
+	//	(rsp->data[2] & IPMI_AUTHSTATUS_ANONYMOUS_USERS_ENABLED) ?
+	//	"en" : "dis");
+	//lprintf(LOG_DEBUG, "");
 
 	s->authstatus = rsp->data[2];
 
@@ -1577,8 +1577,8 @@ ipmi_get_auth_capabilities_cmd(struct ipmi_intf * intf)
 		return -1;
 	}
 
-	lprintf(LOG_DEBUG, "Proceeding with AuthType %s",
-		val2str(s->authtype, ipmi_authtype_session_vals));
+	//lprintf(LOG_DEBUG, "Proceeding with AuthType %s",
+	//	val2str(s->authtype, ipmi_authtype_session_vals));
 
 	return 0;
 }
@@ -1631,9 +1631,9 @@ ipmi_get_session_challenge_cmd(struct ipmi_intf * intf)
 	memcpy(&s->session_id, rsp->data, 4);
 	memcpy(s->challenge, rsp->data + 4, 16);
 
-	lprintf(LOG_DEBUG, "Opening Session");
-	lprintf(LOG_DEBUG, "  Session ID      : %08lx", (long)s->session_id);
-	lprintf(LOG_DEBUG, "  Challenge       : %s", buf2str(s->challenge, 16));
+	//lprintf(LOG_DEBUG, "Opening Session");
+	//lprintf(LOG_DEBUG, "  Session ID      : %08lx", (long)s->session_id);
+	//lprintf(LOG_DEBUG, "  Challenge       : %s", buf2str(s->challenge, 16));
 
 	return 0;
 }
@@ -1865,7 +1865,6 @@ ipmi_lan_activate_session(struct ipmi_intf * intf)
 	 * Supermicro's IPMI LAN 1.5 cards don't tolerate pings.
 	 */
 	if (!ipmi_oem_active(intf, "supermicro")){
-		IPMI_DEBUG(" ");
 		ipmi_lan_ping(intf);
 	}
 
@@ -1876,25 +1875,21 @@ ipmi_lan_activate_session(struct ipmi_intf * intf)
 		ipmi_lan_thump_first(intf);
 	}
 
-	IPMI_DEBUG(" ");
 	rc = ipmi_get_auth_capabilities_cmd(intf);
 	if (rc < 0) {
 		goto fail;
 	}
 
-	IPMI_DEBUG(" ");
 	rc = ipmi_get_session_challenge_cmd(intf);
 	if (rc < 0)
 		goto fail;
 
-	IPMI_DEBUG(" ");
 	rc = ipmi_activate_session_cmd(intf);
 	if (rc < 0)
 		goto fail;
 
 	intf->abort = 0;
 
-	IPMI_DEBUG(" ");
 	rc = ipmi_set_session_privlvl_cmd(intf);
 	if (rc < 0)
 		goto close_fail;
@@ -1958,7 +1953,6 @@ ipmi_lan_open(struct ipmi_intf * intf)
 		return -1;
 	}
 
-	IPMI_DEBUG(" ");
 
 	s = (struct ipmi_session *)malloc(sizeof(struct ipmi_session));
 	if (!s) {

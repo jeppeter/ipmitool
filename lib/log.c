@@ -52,9 +52,12 @@ static void log_reinit(void)
 	log_init(NULL, 0, 0);
 }
 
-void lprintf(int level, const char * format, ...)
+void lprintf_inner(int level, const char* file,int lineno, const char * format, ...)
 {
 	static char logmsg[LOG_MSG_LENGTH];
+	char* sptr=NULL;
+	int leftlen = LOG_MSG_LENGTH;
+	int ret;
 	va_list vptr;
 
 	if (!logpriv)
@@ -63,9 +66,15 @@ void lprintf(int level, const char * format, ...)
 	if (logpriv->level < level)
 		return;
 
+	sptr = logmsg;
+	ret = snprintf(sptr,leftlen,"[%s:%d] ",file,lineno);
+	sptr += ret;
+	leftlen -= ret;
 	va_start(vptr, format);
-	vsnprintf(logmsg, LOG_MSG_LENGTH, format, vptr);
+	ret = vsnprintf(sptr, leftlen, format, vptr);
 	va_end(vptr);
+	sptr += ret;
+	leftlen -= ret;
 
 	if (logpriv->daemon)
 		syslog(level, "%s", logmsg);
