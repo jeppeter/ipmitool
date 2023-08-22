@@ -879,7 +879,7 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 
 	/* second checksum */
 	tmp = len - cs;
-	IPMI_BUFFER_DEBUG(msg+cs, tmp, "check sum data");
+	//IPMI_BUFFER_DEBUG(msg+cs, tmp, "check sum data");
 	msg[len++] = ipmi_csum(msg+cs, tmp);
 	//IPMI_BUFFER_DEBUG(msg, len, "ipmi_csum");
 
@@ -905,12 +905,12 @@ ipmi_lan_build_cmd(struct ipmi_intf * intf, struct ipmi_rq * req, int isRetry)
 		case IPMI_SESSION_AUTHTYPE_MD5:
 			temp = ipmi_auth_md5(s, msg+mp, msg[mp-1]);
 			memcpy(msg+ap, temp, 16);
-			IPMI_BUFFER_DEBUG(msg,len, "copy auth_md5");
+			//IPMI_BUFFER_DEBUG(msg,len, "copy auth_md5");
 			break;
 		case IPMI_SESSION_AUTHTYPE_MD2:
 			temp = ipmi_auth_md2(s, msg+mp, msg[mp-1]);
 			memcpy(msg+ap, temp, 16);
-			IPMI_BUFFER_DEBUG(msg,len, "copy auth_md2");
+			//IPMI_BUFFER_DEBUG(msg,len, "copy auth_md2");
 			break;
 		}
 	}
@@ -1610,8 +1610,8 @@ ipmi_get_session_challenge_cmd(struct ipmi_intf * intf)
 		lprintf(LOG_ERR, "Get Session Challenge command failed");
 		return -1;
 	}
-	if (verbose > 2)
-		printbuf(rsp->data, rsp->data_len, "get_session_challenge");
+	//if (verbose > 2)
+	//	printbuf(rsp->data, rsp->data_len, "get_session_challenge");
 
 	if (rsp->ccode) {
 		switch (rsp->ccode) {
@@ -1675,10 +1675,10 @@ ipmi_activate_session_cmd(struct ipmi_intf * intf)
 
 	s->active = 1;
 
-	lprintf(LOG_DEBUG, "  Privilege Level : %s",
-		val2str(msg_data[1], ipmi_privlvl_vals));
-	lprintf(LOG_DEBUG, "  Auth Type       : %s",
-		val2str(s->authtype, ipmi_authtype_session_vals));
+	//lprintf(LOG_DEBUG, "  Privilege Level : %s",
+	//	val2str(msg_data[1], ipmi_privlvl_vals));
+	//lprintf(LOG_DEBUG, "  Auth Type       : %s",
+	//	val2str(s->authtype, ipmi_authtype_session_vals));
 
 	rsp = intf->sendrecv(intf, &req);
 	if (!rsp) {
@@ -1686,8 +1686,8 @@ ipmi_activate_session_cmd(struct ipmi_intf * intf)
 		s->active = 0;
 		return -1;
 	}
-	if (verbose > 2)
-		printbuf(rsp->data, rsp->data_len, "activate_session");
+	//if (verbose > 2)
+	//	printbuf(rsp->data, rsp->data_len, "activate_session");
 
 	if (rsp->ccode) {
 		fprintf(stderr, "Activate Session error:");
@@ -1736,13 +1736,13 @@ ipmi_activate_session_cmd(struct ipmi_intf * intf)
 		return -1;
 	}
 
-	lprintf(LOG_DEBUG, "\nSession Activated");
-	lprintf(LOG_DEBUG, "  Auth Type       : %s",
-		val2str(rsp->data[0], ipmi_authtype_session_vals));
-	lprintf(LOG_DEBUG, "  Max Priv Level  : %s",
-		val2str(rsp->data[9], ipmi_privlvl_vals));
-	lprintf(LOG_DEBUG, "  Session ID      : %08lx", (long)s->session_id);
-	lprintf(LOG_DEBUG, "  Inbound Seq     : %08lx\n", (long)s->in_seq);
+	//lprintf(LOG_DEBUG, "\nSession Activated");
+	//lprintf(LOG_DEBUG, "  Auth Type       : %s",
+	//	val2str(rsp->data[0], ipmi_authtype_session_vals));
+	//lprintf(LOG_DEBUG, "  Max Priv Level  : %s",
+	//	val2str(rsp->data[9], ipmi_privlvl_vals));
+	//lprintf(LOG_DEBUG, "  Session ID      : %08lx", (long)s->session_id);
+	//lprintf(LOG_DEBUG, "  Inbound Seq     : %08lx\n", (long)s->in_seq);
 
 	return 0;
 }
@@ -1777,8 +1777,8 @@ ipmi_set_session_privlvl_cmd(struct ipmi_intf * intf)
 			val2str(privlvl, ipmi_privlvl_vals));
 		return -1;
 	}
-	if (verbose > 2)
-		printbuf(rsp->data, rsp->data_len, "set_session_privlvl");
+	//if (verbose > 2)
+	//	printbuf(rsp->data, rsp->data_len, "set_session_privlvl");
 
 	if (rsp->ccode) {
 		lprintf(LOG_ERR, "Set Session Privilege Level to %s failed: %s",
@@ -1787,8 +1787,8 @@ ipmi_set_session_privlvl_cmd(struct ipmi_intf * intf)
 		return -1;
 	}
 
-	lprintf(LOG_DEBUG, "Set Session Privilege Level to %s\n",
-		val2str(rsp->data[0], ipmi_privlvl_vals));
+	//lprintf(LOG_DEBUG, "Set Session Privilege Level to %s\n",
+	//	val2str(rsp->data[0], ipmi_privlvl_vals));
 
 	return 0;
 }

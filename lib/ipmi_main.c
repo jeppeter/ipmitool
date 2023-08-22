@@ -895,9 +895,7 @@ ipmi_main(int argc, char ** argv,
 		}
 	}
 
-	IPMI_DEBUG(" ");
 	if (!ipmi_oem_active(ipmi_main_intf, "i82571spt")) {
-		IPMI_DEBUG(" ");
 		/*
 		 * Attempt picmg/vita discovery of the actual interface
 		 * address, unless the users specified an address.
@@ -914,12 +912,10 @@ ipmi_main(int argc, char ** argv,
 		IPMI_DEBUG(" ");
 		addr = arg_addr;
 	} else if (!ipmi_oem_active(ipmi_main_intf, "i82571spt")) {
-		lprintf(LOG_DEBUG, "Acquire IPMB address");
+		//lprintf(LOG_DEBUG, "Acquire IPMB address");
 		addr = ipmi_acquire_ipmb_address(ipmi_main_intf);
-		lprintf(LOG_INFO,  "Discovered IPMB address 0x%x", addr);
+		//lprintf(LOG_INFO,  "Discovered IPMB address 0x%x", addr);
 	}
-
-	IPMI_DEBUG(" ");
 
 	/*
 	 * If we discovered the ipmb address and it is not the same as what we
@@ -975,7 +971,6 @@ ipmi_main(int argc, char ** argv,
 					   ipmi_main_intf->target_ipmb_addr);
 		}
 	}
-	IPMI_DEBUG(" ");
 
 	/* set target LUN (for RAW command) */
 	ipmi_main_intf->target_lun = target_lun ;
@@ -1015,7 +1010,6 @@ ipmi_main(int argc, char ** argv,
 	}
 
 	ipmi_main_intf->cmdlist = cmdlist;
-	IPMI_DEBUG(" ");
 
 	/* now we finally run the command */
 	if (argc-optind > 0)

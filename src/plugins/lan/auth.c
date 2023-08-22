@@ -85,8 +85,8 @@ uint8_t * ipmi_auth_md5(struct ipmi_session * s, uint8_t * data, int data_len)
 	MD5_Update(&ctx, (const uint8_t *)s->authcode, 16);
 	MD5_Final(md, &ctx);
 
-	if (verbose > 3)
-		printf("  MD5 AuthCode    : %s\n", buf2str(md, 16));
+	//if (verbose > 3)
+	//	printf("  MD5 AuthCode    : %s\n", buf2str(md, 16));
 
 	return md;
 #else /*HAVE_CRYPTO_MD5*/
@@ -113,8 +113,8 @@ uint8_t * ipmi_auth_md5(struct ipmi_session * s, uint8_t * data, int data_len)
 
 	md5_finish(&state, digest);
 
-	if (verbose > 3)
-		printf("  MD5 AuthCode    : %s\n", buf2str(digest, 16));
+	//if (verbose > 3)
+	//	printf("  MD5 AuthCode    : %s\n", buf2str(digest, 16));
 	return digest;
 #endif /*HAVE_CRYPTO_MD5*/
 }

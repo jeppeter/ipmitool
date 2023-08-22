@@ -300,8 +300,8 @@ ipmi_get_oem(struct ipmi_intf * intf)
 
 	devid = (struct ipm_devid_rsp *) rsp->data;
 
-	lprintf(LOG_DEBUG,"Iana: %u",
-           IPM_DEV_MANUFACTURER_ID(devid->manufacturer_id));
+	//lprintf(LOG_DEBUG,"Iana: %u",
+    //       IPM_DEV_MANUFACTURER_ID(devid->manufacturer_id));
 
 	return  IPM_DEV_MANUFACTURER_ID(devid->manufacturer_id);
 }
