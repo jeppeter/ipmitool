@@ -1696,8 +1696,10 @@ ipmi_sdr_print_sensor_fc(struct ipmi_intf *intf,
 	unsigned int i = 0;
 	uint8_t target, lun, channel;
 	struct sensor_reading *sr;
+	uint8_t* offptr,*baseptr;
 
 
+	IPMI_ERR("sensor->sensor_num %d",sensor->keys.sensor_num);
 	sr = ipmi_sdr_read_sensor_value(intf, sensor, sdr_record_type, 2);
 
 	if (!sr)
@@ -1880,7 +1882,10 @@ ipmi_sdr_print_sensor_fc(struct ipmi_intf *intf,
 	/*
 	 * VERBOSE OUTPUT
 	 */
+	offptr = (uint8_t*)&(sensor->keys.sensor_num);
+	baseptr = (uint8_t*)sensor;
 
+	IPMI_BUFFER_ERR(sensor,sizeof(*sensor),"sensor buffer sensor_num [%d] offset 0x%x", sensor->keys.sensor_num,offptr - baseptr);
 	printf("Sensor ID              : %s (0x%x)\n",
 	       sr->s_id, sensor->keys.sensor_num);
 	printf(" Entity ID             : %d.%d (%s)\n",
