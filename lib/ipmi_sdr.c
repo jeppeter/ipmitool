@@ -751,6 +751,7 @@ ipmi_sdr_get_sensor_reading_ipmb(struct ipmi_intf *intf, uint8_t sensor,
 	uint32_t save_addr;
 	uint32_t save_channel;
 
+	IPMI_ERR("target 0x%x channel 0x%x target_ipmb_addr 0x%x target_addr 0x%x target_channel 0x%x",target,channel,intf->target_ipmb_addr,intf->target_addr,intf->target_channel);
 	if ( BRIDGE_TO_SENSOR(intf, target, channel) ) {
 		lprintf(LOG_DEBUG,
 			"Bridge to Sensor "
@@ -774,6 +775,11 @@ ipmi_sdr_get_sensor_reading_ipmb(struct ipmi_intf *intf, uint8_t sensor,
 	if (bridged_request) {
 		intf->target_addr    = save_addr;
 		intf->target_channel = save_channel;
+	}
+	if (rsp != NULL) {
+		IPMI_BUFFER_ERR(rsp->data,rsp->data_len,"sensor %d read [IPMI_NETFN_SE] 0x%x GET_SENSOR_READING 0x%x",sensor,IPMI_NETFN_SE,GET_SENSOR_READING);
+	} else {
+		IPMI_ERR("sensor %d read [IPMI_NETFN_SE] 0x%x GET_SENSOR_READING 0x%x",sensor,IPMI_NETFN_SE,GET_SENSOR_READING);
 	}
 	return rsp;
 }
@@ -3210,6 +3216,7 @@ ipmi_sdr_get_record(struct ipmi_intf * intf, struct sdr_get_rs * header,
 		memcpy(data + i, rsp->data + 2, sdr_rq.length);
 		i += sdr_max_read_len;
 	}
+	IPMI_BUFFER_ERR(data,len,"sdr_record");
 	return data;
 }
 
