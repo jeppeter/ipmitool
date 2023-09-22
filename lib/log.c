@@ -163,6 +163,20 @@ void log_level_set(int level)
 	logpriv->level = level;
 }
 
+const char* get_level_str(int level)
+{
+	if (level <= LOG_EMERG) {
+		return "EMERGENCY";
+	} else if (level <= LOG_ERR) {
+		return "ERROR";
+	} else if (level <= LOG_WARNING) {
+		return "WARN";
+	} else if (level <= LOG_INFO) {
+		return "INFO";
+	}
+	return "DEBUG";
+}
+
 
 void ipmi_log(int level,const char* file, int lineno, const char* fmt,...)
 {
@@ -177,7 +191,7 @@ void ipmi_log(int level,const char* file, int lineno, const char* fmt,...)
 	}
 
 	va_start(ap,fmt);
-	fprintf(stderr,"[%s:%d] ", file, lineno);
+	fprintf(stderr,"[%s:%d]<%s> ", file, lineno,get_level_str(level));
 	vfprintf(stderr,fmt,ap);
 	fprintf(stderr,"\n");
 	return;
@@ -199,7 +213,7 @@ void ipmi_buffer_log(int level, const char* file, int lineno, void* pbuf, int bu
 		return ;
 	}
 
-	fprintf(stderr,"[%s:%d] ",file , lineno);
+	fprintf(stderr,"[%s:%d]<%s> ",file , lineno,get_level_str(level));
 	fprintf(stderr,"[%p] size[0x%x:%d]", pbuf, bufsize,bufsize);
 	if (fmt != NULL) {
 		va_start(ap, fmt);
