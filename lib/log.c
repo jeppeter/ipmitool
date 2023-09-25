@@ -163,6 +163,9 @@ void log_level_set(int level)
 	logpriv->level = level;
 }
 
+static int st_ipmi_loglevel= -1;
+static FILE* st_ipmi_logfp = NULL;
+
 const char* get_level_str(int level)
 {
 	if (level <= LOG_EMERG) {
@@ -177,23 +180,54 @@ const char* get_level_str(int level)
 	return "DEBUG";
 }
 
+int get_ipmi_level() 
+{
+	static int st_ipmi_inited = 0;
+	if (st_ipmi_inited == 0) {
+		int level=0;
+		char* levelstr = NULL;
+		char* file = NULL;
+		levelstr = getenv("IPMI_LOGLEVEL");
+		if (levelstr != NULL) {
+			level = atoi(levelstr);
+		}
+
+		file = getenv("IPMI_LOGFILE");
+		if (file != NULL) {
+			st_ipmi_logfp = fopen(file,"w+");
+		}
+		if (st_ipmi_logfp == NULL) {
+			st_ipmi_logfp = stderr;
+		}
+		st_ipmi_loglevel = level;
+
+	}
+	return st_ipmi_loglevel;
+}
+
+int check_ipmi_loglevel(int level)
+{
+	int getlevel = get_ipmi_level();
+	if (getlevel >= level) {
+		return 1;
+	}
+	return 0;
+}
+
 
 void ipmi_log(int level,const char* file, int lineno, const char* fmt,...)
 {
 	va_list ap;
 
-	if (!logpriv) {
-		return;
-	}
-
-	if (logpriv->level < level) {
-		return;
+	if (check_ipmi_loglevel(level) == 0) {
+		return ;
 	}
 
 	va_start(ap,fmt);
-	fprintf(stderr,"[%s:%d]<%s> ", file, lineno,get_level_str(level));
-	vfprintf(stderr,fmt,ap);
-	fprintf(stderr,"\n");
+	fprintf(st_ipmi_logfp,"[%s:%d]<%s> ", file, lineno,get_level_str(level));
+	vfprintf(st_ipmi_logfp,fmt,ap);
+	fprintf(st_ipmi_logfp,"\n");
+	fflush(st_ipmi_logfp);
 	return;
 }
 
@@ -205,54 +239,52 @@ void ipmi_buffer_log(int level, const char* file, int lineno, void* pbuf, int bu
 	int i;
 	unsigned char* plast = pptr;
 
-	if (!logpriv) {
-		return;
-	}
-
-	if (logpriv->level < level) {
+	if (check_ipmi_loglevel(level) == 0) {
 		return ;
 	}
 
-	fprintf(stderr,"[%s:%d]<%s> ",file , lineno,get_level_str(level));
-	fprintf(stderr,"[%p] size[0x%x:%d]", pbuf, bufsize,bufsize);
+
+	fprintf(st_ipmi_logfp,"[%s:%d]<%s> ",file , lineno,get_level_str(level));
+	fprintf(st_ipmi_logfp,"[%p] size[0x%x:%d]", pbuf, bufsize,bufsize);
 	if (fmt != NULL) {
 		va_start(ap, fmt);
-		vfprintf(stderr,fmt, ap);
+		vfprintf(st_ipmi_logfp,fmt, ap);
 	}
 	for (i=0;i<bufsize;i++) {
 		if ((i % 16) == 0) {
 			if (i > 0) {
-				fprintf(stderr,"    ");
+				fprintf(st_ipmi_logfp,"    ");
 				while(plast != pptr) {
 					if (*plast >= ' ' && *plast <= '~') {
-						fprintf(stderr,"%c", *plast);
+						fprintf(st_ipmi_logfp,"%c", *plast);
 					} else {
-						fprintf(stderr, ".");
+						fprintf(st_ipmi_logfp, ".");
 					}
 					plast ++;
 				}
 			}
-			fprintf(stderr,"\n0x%08x", i);
+			fprintf(st_ipmi_logfp,"\n0x%08x", i);
 		}
-		fprintf(stderr," 0x%02x", *pptr);
+		fprintf(st_ipmi_logfp," 0x%02x", *pptr);
 		pptr ++;
 	}
 
 	if (pptr != plast) {
 		while((i % 16) !=0 ) {
-			fprintf(stderr, "     ");
+			fprintf(st_ipmi_logfp, "     ");
 			i ++;
 		}
-		fprintf(stderr,"    ");
+		fprintf(st_ipmi_logfp,"    ");
 		while(plast != pptr) {
 			if (*plast >= ' ' && *plast <= '~') {
-				fprintf(stderr, "%c", *plast);
+				fprintf(st_ipmi_logfp, "%c", *plast);
 			} else {
-				fprintf(stderr, ".");
+				fprintf(st_ipmi_logfp, ".");
 			}
 			plast ++;
 		}
 	}
-	fprintf(stderr,"\n");
+	fprintf(st_ipmi_logfp,"\n");
+	fflush(st_ipmi_logfp);
 	return;
 }
